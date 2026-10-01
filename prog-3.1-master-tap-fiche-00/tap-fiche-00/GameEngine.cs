@@ -30,7 +30,7 @@ namespace activity_00_tap_26_27
 
                 ProcessInput();
 
-                //FixedUpdate(FIXED_FRAME_TIME);
+                FixedUpdate(FIXED_FRAME_TIME);
 
                 Update(elapsed_time);
 
