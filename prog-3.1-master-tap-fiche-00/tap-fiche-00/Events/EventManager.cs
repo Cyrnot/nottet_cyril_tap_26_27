@@ -7,6 +7,8 @@ namespace activity_00_tap_26_27.Events
     {
         private readonly Dictionary<Type, List<Action<IGameEvent>>> _eventTypeTable = new Dictionary<Type, List<Action<IGameEvent>>>();
 
+        private List<GameObject> _gameObjectTable = new List<GameObject>();
+
         public void RegisterToEvent<TYPE>(Action<IGameEvent> action) where TYPE : IGameEvent
         {
             Type event_type = typeof(TYPE);
@@ -40,6 +42,24 @@ namespace activity_00_tap_26_27.Events
                     Action<IGameEvent> action = _eventTypeTable[event_type][event_index];
                     action(game_event);
                 }
+            }
+        }
+
+        public void RegisterGameObjectInEventManager(GameObject game_object)
+        {
+            _gameObjectTable.Add(game_object);
+        }
+        public void UnregisterGameObjectInEventManager(GameObject game_object)
+        {
+            _gameObjectTable.Remove(game_object);
+        }
+
+        //pas bon
+        public void TriggerDelayEvent()
+        {
+            for(int game_object_index = 0; game_object_index > _gameObjectTable.Count; game_object_index++)
+            {
+                _gameObjectTable.
             }
         }
     }
