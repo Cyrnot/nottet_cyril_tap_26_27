@@ -21,6 +21,8 @@ namespace activity_00_tap_26_27
         {
             _stopwatch.Start();
 
+            float lag = 0.0f;
+
             float last_time = GetCurrentTime();
 
             while (!_shouldQuit)
@@ -28,9 +30,16 @@ namespace activity_00_tap_26_27
                 float loop_start_time = GetCurrentTime();
                 float elapsed_time = loop_start_time - last_time;
 
+                lag += elapsed_time;
+
                 ProcessInput();
 
-                FixedUpdate(FIXED_FRAME_TIME);
+                while (lag >= FIXED_FRAME_TIME)
+                {
+                    FixedUpdate(FIXED_FRAME_TIME);
+
+                    lag -= FIXED_FRAME_TIME;
+                }
 
                 Update(elapsed_time);
 
