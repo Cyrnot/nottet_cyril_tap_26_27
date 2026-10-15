@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace activity_00_tap_26_27.Events
 {
@@ -7,7 +8,7 @@ namespace activity_00_tap_26_27.Events
     {
         private readonly Dictionary<Type, List<Action<IGameEvent>>> _eventTypeTable = new Dictionary<Type, List<Action<IGameEvent>>>();
 
-        private List<GameObject> _gameObjectTable = new List<GameObject>();
+        private List<IGameEvent> _eventTable = new List<IGameEvent>();
 
         public void RegisterToEvent<TYPE>(Action<IGameEvent> action) where TYPE : IGameEvent
         {
@@ -45,21 +46,26 @@ namespace activity_00_tap_26_27.Events
             }
         }
 
-        public void RegisterGameObjectInEventManager(GameObject game_object)
+        public void TriggerDelayedEvent(IGameEvent game_event)
         {
-            _gameObjectTable.Add(game_object);
-        }
-        public void UnregisterGameObjectInEventManager(GameObject game_object)
-        {
-            _gameObjectTable.Remove(game_object);
+            _eventTable.Add(game_event);
         }
 
-        //pas bon
-        public void TriggerDelayEvent()
+        public void ProcessDelayEvents()
         {
-            for(int game_object_index = 0; game_object_index > _gameObjectTable.Count; game_object_index++)
+            for(int game_object_table_index = 0; game_object_table_index > _eventTable.Count; game_object_table_index++)
             {
-                _gameObjectTable.
+                IGameEvent game_event = _eventTable.ElementAt(game_object_table_index);
+                
+                _eventTable.RemoveAt(game_object_table_index);
+
+                if (_eventTypeTable.TryGetValue(game_event.GetType(), out List<Action<IGameEvent>> actions))
+                    {
+                        foreach (Action<IGameEvent> action in actions)
+                        {
+                            action(game_event);
+                        }
+                    }
             }
         }
     }

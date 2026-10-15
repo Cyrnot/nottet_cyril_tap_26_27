@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using activity_00_tap_26_27.Components;
+using activity_00_tap_26_27.Events;
+using Game.Events;
 using System;
-using activity_00_tap_26_27.Components;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace activity_00_tap_26_27
 {
@@ -17,6 +21,8 @@ namespace activity_00_tap_26_27
 
         private bool _shouldQuit = false;
 
+        private EventManager _eventManager = new EventManager();
+
         public void Run()
         {
             _stopwatch.Start();
@@ -24,6 +30,13 @@ namespace activity_00_tap_26_27
             float lag = 0.0f;
 
             float last_time = GetCurrentTime();
+
+            GameObject game_object_test = new GameObject("game_object_test");
+
+            _eventManager.RegisterToEvent<RegisterGameObjectGameEvent> (OnRegisterGameObjectGameEvent);
+            _eventManager.UnregisterFromEvent<UnregisterGameObjectGameEvent>(OnUnregisterGameObjectGameEvent);
+
+            _eventManager.TriggerDelayedEvent(new RegisterGameObjectGameEvent(game_object_test));
 
             while (!_shouldQuit)
             {
@@ -38,6 +51,8 @@ namespace activity_00_tap_26_27
                 {
                     FixedUpdate(FIXED_FRAME_TIME);
 
+                    _eventManager.ProcessDelayEvents();
+
                     lag -= FIXED_FRAME_TIME;
                 }
 
@@ -48,7 +63,21 @@ namespace activity_00_tap_26_27
                 last_time = loop_start_time;
             }
 
-            Console.WriteLine("Goodbye!");
+            _eventManager.TriggerDelayedEvent(new LogMessageGameEvent("Goodbye !"));
+        }
+
+        private void OnRegisterGameObjectGameEvent(IGameEvent game_event)
+        {
+            RegisterGameObjectGameEvent register_game_object_game_event = game_event as RegisterGameObjectGameEvent;
+
+            _gameObjectTable.Add(register_game_object_game_event._gameObject);
+        }
+
+        private void OnUnregisterGameObjectGameEvent(IGameEvent game_event)
+        {
+            UnregisterGameObjectGameEvent unregister_game_object_game_event = game_event as UnregisterGameObjectGameEvent;
+
+            _gameObjectTable.Remove(unregister_game_object_game_event._gameObject);
         }
 
         private void ProcessInput()
