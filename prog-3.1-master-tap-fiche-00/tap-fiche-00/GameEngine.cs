@@ -1,5 +1,6 @@
 ﻿using activity_00_tap_26_27.Components;
 using activity_00_tap_26_27.Events;
+using Game;
 using Game.Events;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace activity_00_tap_26_27
         private bool _shouldQuit = false;
 
         private EventManager _eventManager = new EventManager();
+        private LogManager _logManager = new LogManager();
 
         public void Run()
         {
@@ -37,6 +39,16 @@ namespace activity_00_tap_26_27
             _eventManager.UnregisterFromEvent<UnregisterGameObjectGameEvent>(OnUnregisterGameObjectGameEvent);
 
             _eventManager.TriggerDelayedEvent(new RegisterGameObjectGameEvent(game_object_test));
+
+            _logManager.InitialLog(_eventManager);
+            if (File.Exists("Debug.txt"))
+            {
+                _eventManager.TriggerDelayedEvent(new LogMessageGameEvent("File Found at \"C:\\\\Users\\\\cyril\\\\Fichiers\\\\GitHub\\\\nottet_cyril_tap_26_27\\\\prog-3.1-master-tap-fiche-00 ! Text Add !"));
+            }
+            else
+            {
+                _eventManager.TriggerEvent(new LogMessageGameEvent("File Not Found at \"C:\\\\Users\\\\cyril\\\\Fichiers\\\\GitHub\\\\nottet_cyril_tap_26_27\\\\prog-3.1-master-tap-fiche-00 ! File Create !"));
+            }
 
             while (!_shouldQuit)
             {

@@ -13,18 +13,18 @@ namespace Game
 {
     internal class LogManager
     {
-        EventManager _eventManager;
         
-        private void InitialLog()
+        public void InitialLog(EventManager event_manager)
         {
-            _eventManager.RegisterToEvent<LogMessageGameEvent>(OnRegisterLog);
+            event_manager.RegisterToEvent<LogMessageGameEvent>(OnRegisterLog);
+
         }
 
-        private void OnRegisterLog(IGameEvent game_event)
+        public void OnRegisterLog(IGameEvent game_event)
         {
             LogMessageGameEvent log_message_game_event = game_event as LogMessageGameEvent;
 
-            File.AppendAllText("C:\\Users\\cyril\\Fichiers\\GitHub\\nottet_cyril_tap_26_27\\prog-3.1-master-tap-fiche-00\\Log.txt", DateTime.Now + log_message_game_event._log);
+            File.AppendAllText("../../../Debug.log", DateTime.Now + log_message_game_event._log);
         }
 
 
