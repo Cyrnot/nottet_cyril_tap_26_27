@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using Game.Core.Events;
+﻿using GameLibrary.Core.Events;
 
 
-namespace Game.Presentation
+namespace GameLibrary.Core
 {
-    internal class LogManager
+    public class LogManager
     {
         
         public void InitialLog(EventManager event_manager)

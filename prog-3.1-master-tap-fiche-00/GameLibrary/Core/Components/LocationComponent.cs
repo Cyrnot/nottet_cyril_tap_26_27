@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Game.Core.Components
+﻿namespace GameLibrary.Core.Components
 {
-    internal class LocationComponent : Component
+    public class LocationComponent : Component
     {
         private string _locationName;
 

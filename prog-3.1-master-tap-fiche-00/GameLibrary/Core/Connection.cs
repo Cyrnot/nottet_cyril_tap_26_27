@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Game.Core.Components;
+﻿using GameLibrary.Core.Components;
 
-namespace Game.Core
+namespace GameLibrary.Core
 {
-    internal class Connection
+    public class Connection
     {
         private LocationComponent _destinationLocation;
         private float _timeToReachDestination;

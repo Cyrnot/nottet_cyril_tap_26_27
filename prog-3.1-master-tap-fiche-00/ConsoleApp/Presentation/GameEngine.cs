@@ -1,11 +1,8 @@
-﻿using Game.Core;
-using Game.Core.Components;
-using Game.Core.Events;
+﻿using GameLibrary.Core.Events;
+using GameLibrary.Core;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using static System.Net.Mime.MediaTypeNames;
+using GameLibrary.Core.Components;
 
 namespace Game.Presentation
 {

@@ -1,4 +1,4 @@
-﻿namespace Game.Core.Events
+﻿namespace GameLibrary.Core.Events
 {
     public interface IGameEvent
     {

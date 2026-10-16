@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System;
-using System.Linq;
-
-namespace Game.Core.Events
+﻿namespace GameLibrary.Core.Events
 {
     public class EventManager
     {
         private readonly Dictionary<Type, List<Action<IGameEvent>>> _eventTypeTable = new Dictionary<Type, List<Action<IGameEvent>>>();
 
-        private List<IGameEvent> _eventTable = new List<IGameEvent>();
+        private readonly List<IGameEvent> _eventTable = new List<IGameEvent>();
 
         public void RegisterToEvent<TYPE>(Action<IGameEvent> action) where TYPE : IGameEvent
         {

@@ -1,4 +1,6 @@
-﻿namespace Game.Presentation
+﻿using Game.Presentation;
+
+namespace Game 
 {
     class Program
     {

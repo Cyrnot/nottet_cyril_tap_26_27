@@ -1,4 +1,4 @@
-﻿namespace Game.Core.States
+﻿namespace GameLibrary.Core.States
 {
     public interface IState
     {

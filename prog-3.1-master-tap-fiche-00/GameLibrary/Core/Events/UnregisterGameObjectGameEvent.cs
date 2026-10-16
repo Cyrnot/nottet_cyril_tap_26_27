@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Game.Core.Events
+﻿namespace GameLibrary.Core.Events
 {
     internal class UnregisterGameObjectGameEvent : IGameEvent
     {
-        public GameObject _gameObject;
+        public readonly GameObject _gameObject;
 
         public UnregisterGameObjectGameEvent(GameObject game_object)
         {

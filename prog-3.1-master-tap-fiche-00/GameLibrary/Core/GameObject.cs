@@ -1,7 +1,6 @@
-﻿using Game.Core.Components;
-using System.Collections.Generic;
+﻿using GameLibrary.Core.Components;
 
-namespace Game.Core
+namespace GameLibrary.Core
 {
     public class GameObject
     {
