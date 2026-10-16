@@ -9,8 +9,6 @@ public class GameManager
 
     private readonly EventManager _eventManager;
 
-    private LogManager _logManager = new LogManager();
-
     private LocationComponent _currentLocation;
     private int _selectedChildLocationIndex = -1;
 
@@ -20,23 +18,14 @@ public class GameManager
     {
         _eventManager = event_manager;
 
+
         GameObject game_object_test = new GameObject("game_object_test");
 
         _eventManager.RegisterToEvent<RegisterGameObjectGameEvent>(OnRegisterGameObjectGameEvent);
         _eventManager.RegisterToEvent<UnregisterGameObjectGameEvent>(OnUnregisterGameObjectGameEvent);
         _eventManager.RegisterToEvent<GameActionGameEvent>(OnGameActionGameEvent);
 
-        _eventManager.TriggerDelayedEvent(new RegisterGameObjectGameEvent(game_object_test));
-
-        _logManager.InitialLog(_eventManager);
-        if (File.Exists("../../../Debug.log"))
-        {
-            _eventManager.TriggerEvent(new LogMessageGameEvent("File Found at C:\\Users\\cyril\\Fichiers\\GitHub\\nottet_cyril_tap_26_27\\prog-3.1-master-tap-fiche-00\\tap-fiche-00 ! Text Add !"));
-        }
-        else
-        {
-            _eventManager.TriggerEvent(new LogMessageGameEvent("File Not Found at C:\\Users\\cyril\\Fichiers\\GitHub\\nottet_cyril_tap_26_27\\prog-3.1-master-tap-fiche-00\\tap-fiche-00 ! File Create !"));
-        }
+        _eventManager.TriggerDelayedEvent(new RegisterGameObjectGameEvent(game_object_test));        
 
         LocationComponent world_location = CreateLocation("World", event_manager, null, 0.0f);
 

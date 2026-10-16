@@ -17,6 +17,13 @@ namespace GameConsole.Presentation
         private EventManager _eventManager = new EventManager();
         private GameManager _gameManager;
 
+        private LogManager _logManager;
+
+        public GameEngine()
+        {
+            _logManager = new LogManager(new LogFileWriter("../../../debug.log"), _eventManager);
+        }
+
         public void Run()
         {
             _stopwatch.Start();
