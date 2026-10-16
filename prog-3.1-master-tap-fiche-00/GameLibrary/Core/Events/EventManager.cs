@@ -49,19 +49,19 @@
 
         public void ProcessDelayEvents()
         {
-            for(int game_object_table_index = 0; game_object_table_index > _eventTable.Count; game_object_table_index++)
+            while (_eventTable.Count > 0)
             {
-                IGameEvent game_event = _eventTable.ElementAt(game_object_table_index);
-                
-                _eventTable.RemoveAt(game_object_table_index);
+                IGameEvent game_event = _eventTable[0];
+
+                _eventTable.RemoveAt(0);
 
                 if (_eventTypeTable.TryGetValue(game_event.GetType(), out List<Action<IGameEvent>> actions))
+                {
+                    foreach (Action<IGameEvent> action in actions)
                     {
-                        foreach (Action<IGameEvent> action in actions)
-                        {
-                            action(game_event);
-                        }
+                        action(game_event);
                     }
+                }
             }
         }
     }

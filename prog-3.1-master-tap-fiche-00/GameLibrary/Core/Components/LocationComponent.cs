@@ -3,6 +3,7 @@
     public class LocationComponent : Component
     {
         private string _locationName;
+        private LocationComponent? _parentLocation;
 
         private readonly List<Connection> _destinationWayTable = new List<Connection>();
 
@@ -29,6 +30,19 @@
         public void AddLocation(LocationComponent location_component, float travel_duration)
         {
             _destinationWayTable.Add(new Connection(location_component, travel_duration));
+            location_component.SetParentLocation(this);
         }
+
+        public LocationComponent GetParentLocation()
+        {
+            return _parentLocation;
+        }
+
+        public void SetParentLocation(LocationComponent parent_location)
+        {
+            _parentLocation = parent_location;
+
+        }
+
     }
 }

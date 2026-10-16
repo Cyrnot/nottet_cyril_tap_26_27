@@ -62,9 +62,14 @@ public class GameManager
         else if (game_action_game_event._gameActionType == GameActionType.CONFIRM)
         {
             _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
-            Connection selected_way = _currentLocation.GetChildLocationAtIndex(_selectedChildLocationIndex);
-            _eventManager.TriggerEvent(new LogMessageGameEvent($"Location changed from {_currentLocation.GetName()} to {selected_way.GetDestinationLocation().GetName()} - time taken: {selected_way.GetTimeToReachDestination()}."));
-            _currentLocation = selected_way.GetDestinationLocation();
+
+            if (_selectedChildLocationIndex >= 0 && _currentLocation.GetChildLocationCount() > 0)
+            {
+                Connection selected_way = _currentLocation.GetChildLocationAtIndex(_selectedChildLocationIndex);
+                _eventManager.TriggerEvent(new LogMessageGameEvent($"Location changed from {_currentLocation.GetName()} to {selected_way.GetDestinationLocation().GetName()} - time taken: {selected_way.GetTimeToReachDestination()}."));
+                _currentLocation = selected_way.GetDestinationLocation();
+                _selectedChildLocationIndex = -1;
+            }
         }
         else if (game_action_game_event._gameActionType == GameActionType.CANCEL)
         {
