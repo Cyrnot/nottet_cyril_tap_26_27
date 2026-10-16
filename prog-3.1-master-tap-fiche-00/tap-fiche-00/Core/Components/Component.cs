@@ -1,4 +1,4 @@
-﻿namespace activity_00_tap_26_27.Components
+﻿namespace Game.Core.Components
 {
     public abstract class Component
     {

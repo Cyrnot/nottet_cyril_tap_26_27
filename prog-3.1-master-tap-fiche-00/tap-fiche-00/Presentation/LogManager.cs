@@ -1,15 +1,14 @@
-﻿using activity_00_tap_26_27.Events;
-using Game.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Game.Core.Events;
 
 
-namespace Game
+namespace Game.Presentation
 {
     internal class LogManager
     {
@@ -24,7 +23,7 @@ namespace Game
         {
             LogMessageGameEvent log_message_game_event = game_event as LogMessageGameEvent;
 
-            File.AppendAllText("../../../Debug.log", DateTime.Now + log_message_game_event._log);
+            File.AppendAllText("../../../Debug.log", DateTime.Now+ " : " + log_message_game_event._log + "\n");
         }
 
 

@@ -1,7 +1,7 @@
-﻿using activity_00_tap_26_27.Components;
+﻿using Game.Core.Components;
 using System.Collections.Generic;
 
-namespace activity_00_tap_26_27
+namespace Game.Core
 {
     public class GameObject
     {

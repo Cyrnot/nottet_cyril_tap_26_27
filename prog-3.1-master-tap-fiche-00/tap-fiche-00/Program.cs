@@ -1,4 +1,4 @@
-﻿namespace activity_00_tap_26_27
+﻿namespace Game.Presentation
 {
     class Program
     {

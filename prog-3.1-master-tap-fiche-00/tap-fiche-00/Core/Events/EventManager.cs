@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace activity_00_tap_26_27.Events
+namespace Game.Core.Events
 {
     public class EventManager
     {
