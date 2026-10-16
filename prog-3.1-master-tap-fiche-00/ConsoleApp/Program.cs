@@ -1,6 +1,6 @@
-﻿using Game.Presentation;
+﻿using GameConsole.Presentation;
 
-namespace Game 
+namespace GameConsole 
 {
     class Program
     {

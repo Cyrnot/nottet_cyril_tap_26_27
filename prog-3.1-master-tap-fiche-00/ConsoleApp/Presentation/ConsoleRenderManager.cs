@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Game.Presentation
+namespace GameConsole.Presentation
 {
     public class ConsoleRenderManager
     {

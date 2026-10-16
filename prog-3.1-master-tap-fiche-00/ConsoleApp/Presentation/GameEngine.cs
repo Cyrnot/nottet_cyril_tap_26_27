@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using GameLibrary.Core.Components;
 
-namespace Game.Presentation
+namespace GameConsole.Presentation
 {
     public class GameEngine
     {
