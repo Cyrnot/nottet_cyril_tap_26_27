@@ -1,5 +1,6 @@
 ﻿using GameLibrary.Core.Components;
 using GameLibrary.Core.Events;
+using GameLibrary.Core.States;
 
 namespace GameLibrary.Core;
 
@@ -9,78 +10,47 @@ public class GameManager
 
     private readonly EventManager _eventManager;
 
+    private readonly StateMachine _gameFlowStateStateMachine;
+
     private LocationComponent _currentLocation;
     private int _selectedChildLocationIndex = -1;
 
     private bool _shouldQuit = false;
+    private bool _isMenuStateActive = true;
 
     public GameManager(EventManager event_manager)
     {
         _eventManager = event_manager;
 
+        _gameFlowStateStateMachine = new StateMachine(_eventManager);
+        _gameFlowStateStateMachine.SetInitialState(new MainMenuState(_gameFlowStateStateMachine, this, _eventManager));
 
         GameObject game_object_test = new GameObject("game_object_test");
 
         _eventManager.RegisterToEvent<RegisterGameObjectGameEvent>(OnRegisterGameObjectGameEvent);
         _eventManager.RegisterToEvent<UnregisterGameObjectGameEvent>(OnUnregisterGameObjectGameEvent);
-        _eventManager.RegisterToEvent<GameActionGameEvent>(OnGameActionGameEvent);
 
         _eventManager.TriggerDelayedEvent(new RegisterGameObjectGameEvent(game_object_test));        
+    }
 
-        LocationComponent world_location = CreateLocation("World", event_manager, null, 0.0f);
+    public void BeginExploration()
+    {
+        LocationComponent world_location = CreateLocation("World", _eventManager, null, 0.0f);
 
         _currentLocation = world_location;
 
-        LocationComponent town_location = CreateLocation("Daisy Town", event_manager, world_location, 10.0f);
-        LocationComponent inn_location = CreateLocation("Laughing Horse Inn", event_manager, town_location, 5.0f);
-        LocationComponent shop_location = CreateLocation("Gun Shop", event_manager, town_location, 3.0f);
+        LocationComponent town_location = CreateLocation("Daisy Town", _eventManager, world_location, 10.0f);
+        LocationComponent inn_location = CreateLocation("Laughing Horse Inn", _eventManager, town_location, 5.0f);
+        LocationComponent shop_location = CreateLocation("Gun Shop", _eventManager, town_location, 3.0f);
 
-        LocationComponent town_location_2 = CreateLocation("Rose Town", event_manager, world_location, 10.0f);
-        LocationComponent inn_location_2 = CreateLocation("Fallen Cow Inn", event_manager, town_location_2, 5.0f);
-        LocationComponent shop_location_2 = CreateLocation("Tanner Shop", event_manager, town_location_2, 3.0f);
+        LocationComponent town_location_2 = CreateLocation("Rose Town", _eventManager, world_location, 10.0f);
+        LocationComponent inn_location_2 = CreateLocation("Fallen Cow Inn", _eventManager, town_location_2, 5.0f);
+        LocationComponent shop_location_2 = CreateLocation("Tanner Shop", _eventManager, town_location_2, 3.0f);
 
-        LocationComponent dungeon_location = CreateLocation("Silver Mine Dungeon", event_manager, world_location, 15.0f);
-        LocationComponent dungeon_level_one_location = CreateLocation("Dungeon level 1", event_manager, dungeon_location, 2.0f);
-        LocationComponent dungeon_level_two_location = CreateLocation("Dungeon level 2", event_manager, dungeon_level_one_location, 5.0f);
-        LocationComponent dungeon_level_three_location = CreateLocation("Dungeon level 3", event_manager, dungeon_level_two_location, 10.0f);
-    }
-
-    private void OnGameActionGameEvent(IGameEvent game_event)
-    {
-        GameActionGameEvent game_action_game_event = game_event as GameActionGameEvent;
-
-        if(game_action_game_event._gameActionType == GameActionType.NAVIGATE_UP)
-        {
-            _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
-            _selectedChildLocationIndex = (_selectedChildLocationIndex - 1 + _currentLocation.GetChildLocationCount()) % _currentLocation.GetChildLocationCount();
-        }
-        else if (game_action_game_event._gameActionType == GameActionType.NAVIGATE_DOWN)
-        {
-            _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
-            _selectedChildLocationIndex = (_selectedChildLocationIndex + 1) % _currentLocation.GetChildLocationCount();
-        }
-        else if (game_action_game_event._gameActionType == GameActionType.CONFIRM)
-        {
-            _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
-
-            if (_selectedChildLocationIndex >= 0 && _currentLocation.GetChildLocationCount() > 0)
-            {
-                Connection selected_way = _currentLocation.GetChildLocationAtIndex(_selectedChildLocationIndex);
-                _eventManager.TriggerEvent(new LogMessageGameEvent($"Location changed from {_currentLocation.GetName()} to {selected_way.GetDestinationLocation().GetName()} - time taken: {selected_way.GetTimeToReachDestination()}."));
-                _currentLocation = selected_way.GetDestinationLocation();
-                _selectedChildLocationIndex = -1;
-            }
-        }
-        else if (game_action_game_event._gameActionType == GameActionType.CANCEL)
-        {
-            _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
-            _selectedChildLocationIndex = -1;
-        }
-        else if (game_action_game_event._gameActionType == GameActionType.QUIT)
-        {
-            _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
-            _shouldQuit = true;
-        }
+        LocationComponent dungeon_location = CreateLocation("Silver Mine Dungeon", _eventManager, world_location, 15.0f);
+        LocationComponent dungeon_level_one_location = CreateLocation("Dungeon level 1", _eventManager, dungeon_location, 2.0f);
+        LocationComponent dungeon_level_two_location = CreateLocation("Dungeon level 2", _eventManager, dungeon_level_one_location, 5.0f);
+        LocationComponent dungeon_level_three_location = CreateLocation("Dungeon level 3", _eventManager, dungeon_level_two_location, 10.0f);
     }
 
     private void OnRegisterGameObjectGameEvent(IGameEvent game_event)
@@ -145,6 +115,16 @@ public class GameManager
         return _shouldQuit;
     }
 
+    public void SetShouldQuit(bool should_quit)
+    {
+        _shouldQuit = should_quit;
+    }
+
+    public void RequestQuit()
+    {
+        _shouldQuit = true;
+    }
+
     public LocationComponent GetCurrentLocation()
     {
         return _currentLocation;
@@ -153,5 +133,25 @@ public class GameManager
     public int GetSelectedDestinationIndex()
     {
         return _selectedChildLocationIndex;
+    }
+
+    public void SetSelectedDestinationIndex(int selected_destination_index)
+    {
+        _selectedChildLocationIndex = selected_destination_index;
+    }
+
+    public void SetCurrentLocation(LocationComponent current_location)
+    {
+        _currentLocation = current_location;
+    }
+
+    public bool GetIsMenuStateActive()
+    {
+        return _isMenuStateActive;
+    }
+
+    public void SetIsMenuStateActive(bool is_menu_state_active)
+    {
+        _isMenuStateActive = is_menu_state_active;
     }
 }
