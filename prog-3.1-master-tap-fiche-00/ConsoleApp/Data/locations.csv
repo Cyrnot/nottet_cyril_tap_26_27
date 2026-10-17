@@ -1,0 +1,12 @@
+Id;Name;Parent;TravelMinutes
+W;World;;
+DT_W;Daisy Town;W;10
+LHI_DT;Laughing Horse Inn;DT_W;5
+GS_DT;Gun Shop;DT_W;3
+RT_W;Rose Town;W;10
+FCI_RT;Fallen Cow Inn;RT_W;5
+TS_RT;Tanner Shop;RT_W;3
+SMD_W;Silver Mine Dungeon;W;15
+DL1_SMD;Dungeon Level 1;SMD_W;2
+DL2_DL1;Dungeon Level 2;DL1_SMD;5
+DL3_DL2;Dungeon Level 3;DL2_DL1;10

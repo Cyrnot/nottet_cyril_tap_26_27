@@ -1,8 +1,10 @@
-﻿using GameLibrary.Core.Events;
-using GameLibrary.Core;
+﻿using GameLibrary.Core;
+using GameLibrary.Core.Components;
+using GameLibrary.Core.Events;
+using GameLibrary.Csv;
 using System;
 using System.Diagnostics;
-using GameLibrary.Core.Components;
+using System.IO;
 
 namespace GameConsole.Presentation
 {
@@ -61,6 +63,27 @@ namespace GameConsole.Presentation
 
             _eventManager.TriggerEvent(new LogMessageGameEvent("Goodbye !"));
         }
+        private static string GetFileContent(string file_name, ContentReport report)
+        {
+            string file_content = null;
+            string file_path = $"../../../Data/{file_name}";
+
+            try
+            {
+                file_content = File.ReadAllText(file_path);
+            }
+            catch (FileNotFoundException exception)
+            {
+                report.AddError(file_name, -1, $"File not found: {exception.Message} at location {file_path}");
+            }
+            catch (Exception exception)
+            {
+                report.AddError(file_name, -1, $"An unexpected error happened: {exception.Message}");
+            }
+
+            return file_content;
+        }
+
 
         private void ProcessInput()
         {
