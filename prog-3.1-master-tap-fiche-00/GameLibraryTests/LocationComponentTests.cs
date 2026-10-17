@@ -13,7 +13,7 @@ namespace GameLibraryTests
         private LocationComponent CreateLocation(string location_name)
         {
             GameObject location_game_object = new GameObject(location_name);
-            LocationComponent location_component = new LocationComponent(location_name);
+            LocationComponent location_component = new LocationComponent(location_name, null);
 
             location_game_object.AddComponent(location_component);
 

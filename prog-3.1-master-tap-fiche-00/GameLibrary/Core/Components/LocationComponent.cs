@@ -7,7 +7,7 @@
 
         private readonly List<Connection> _destinationWayTable = new List<Connection>();
 
-        public LocationComponent(string locationName)
+        public LocationComponent(string locationName, GameObject game_object) : base(game_object)
         {
             _locationName = locationName;
         }

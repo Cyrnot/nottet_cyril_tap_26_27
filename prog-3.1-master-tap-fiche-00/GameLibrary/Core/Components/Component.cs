@@ -3,6 +3,12 @@
     public abstract class Component
     {
         private bool _isActive = true;
+        private GameObject game_object;
+
+        protected Component(GameObject game_object)
+        {
+            this.game_object = game_object;
+        }
 
         public virtual void Update(float elapsed_time)
         {

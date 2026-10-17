@@ -1,5 +1,6 @@
 ﻿using GameLibrary;
 using GameLibrary.Csv;
+using GameLibrary.Data;
 
 namespace GameLibraryTests
 {

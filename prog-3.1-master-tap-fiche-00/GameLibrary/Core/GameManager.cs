@@ -96,7 +96,7 @@ public class GameManager
     private LocationComponent CreateLocation(string location_name, EventManager event_manager, LocationComponent parent_location, float distance_to_parent)
     {
         GameObject game_object = new GameObject(location_name);
-        LocationComponent location_component = new LocationComponent(location_name);
+        LocationComponent location_component = new LocationComponent(location_name, null);
 
         game_object.AddComponent(location_component);
 

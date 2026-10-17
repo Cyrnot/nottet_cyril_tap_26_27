@@ -1,4 +1,4 @@
-﻿using GameLibrary;
+﻿using GameLibrary.Data;
 using GameLibrary.Csv;
 
 namespace GameLibraryTests
