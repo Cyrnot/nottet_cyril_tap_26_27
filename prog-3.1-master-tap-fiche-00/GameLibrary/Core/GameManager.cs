@@ -127,4 +127,9 @@ public class GameManager
     {
         _isMenuStateActive = is_menu_state_active;
     }
+
+    public IState GetGameFlowStateMachine()
+    {
+        return _gameFlowStateStateMachine.GetCurrentState();
+    }
 }

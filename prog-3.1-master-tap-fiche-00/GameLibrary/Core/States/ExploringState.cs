@@ -98,5 +98,15 @@ namespace GameLibrary.Core.States
         {
 
         }
+
+        public LocationComponent GetCurrentLocation()
+        {
+            return _gameManager.GetCurrentLocation();
+        }
+
+        public int GetSelectedDestinationIndex()
+        {
+            return _gameManager.GetSelectedDestinationIndex();
+        }
     }
 }

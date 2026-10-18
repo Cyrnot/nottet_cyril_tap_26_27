@@ -39,5 +39,10 @@ namespace GameLibrary.Core.States
         {
             _currentState.FixedUpdate(fixed_elapsed_time);
         }
+
+        public IState GetCurrentState()
+        {
+            return _currentState;
+        }
     }
 }

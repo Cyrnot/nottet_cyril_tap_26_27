@@ -1,6 +1,8 @@
-﻿using GameLibrary.Core;
+﻿using GameConsole.Render;
+using GameLibrary.Core;
 using GameLibrary.Core.Components;
 using GameLibrary.Core.Events;
+using GameLibrary.Core.States;
 using GameLibrary.Csv;
 using GameLibrary.Data;
 using System;
@@ -21,8 +23,9 @@ namespace GameConsole.Presentation
         private EventManager _eventManager = new EventManager();
         private GameManager _gameManager;
         private WorldBuilder _worldBuilder;
-
         private LogManager _logManager;
+
+        private readonly Dictionary<Type, IScreenRenderer> _screenRendererTable = new Dictionary<Type, IScreenRenderer>();
 
         public GameEngine()
         {
@@ -63,6 +66,9 @@ namespace GameConsole.Presentation
             else
             {
                 _gameManager = new GameManager(_eventManager, new WorldBuilder(location_data_table));
+
+                _screenRendererTable.Add(typeof(MainMenuState), new MainMenuRenderer());
+                _screenRendererTable.Add(typeof(ExploringState), new ExploringRenderer());
             }
 
             while (!_gameManager.GetShouldQuit())
@@ -156,33 +162,10 @@ namespace GameConsole.Presentation
 
         private void Render()
         {
-            if (_gameManager.GetIsMenuStateActive())
-            {
-                _renderManager.Draw(0, 0, "Enter to start", ConsoleColor.Green, ConsoleColor.Black);
-                _renderManager.Draw(0, 1, "Esc to quit", ConsoleColor.Green, ConsoleColor.Black);
-            }
-            else
-            {
-                _renderManager.Draw(0, 0, "Game in progress...\n", ConsoleColor.Magenta, ConsoleColor.Black);
+            IState current_game_flow_state = _gameManager.GetGameFlowStateMachine();
 
-                LocationComponent current_location = _gameManager.GetCurrentLocation();
+            _screenRendererTable[current_game_flow_state.GetType()].Render(current_game_flow_state, _renderManager);
 
-                _renderManager.Draw(0, 1, $"Exploring {current_location.GetName()}\n", ConsoleColor.Cyan, ConsoleColor.Black);
-
-                for (int location_index = 0; location_index < current_location.GetChildLocationCount(); location_index++)
-                {
-                    Connection current_connection = current_location.GetChildLocationAtIndex(location_index);
-
-                    if (location_index == _gameManager.GetSelectedDestinationIndex())
-                    {
-                        _renderManager.Draw(0, 2 + location_index, $"{location_index + 1}. {current_connection.GetDestinationLocation().GetName()}: Duration: {current_connection.GetTimeToReachDestination()}", ConsoleColor.Black, ConsoleColor.Green);
-                    }
-                    else
-                    {
-                        _renderManager.Draw(0, 2 + location_index, $"{location_index + 1}. {current_connection.GetDestinationLocation().GetName()}: Duration: {current_connection.GetTimeToReachDestination()}", ConsoleColor.Green, ConsoleColor.Black);
-                    }
-                }
-            }
             _renderManager.Render();
         }
 
