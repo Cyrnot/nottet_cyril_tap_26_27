@@ -10,3 +10,4 @@ SMD_W;Silver Mine Dungeon;W;15
 DL1_SMD;Dungeon Level 1;SMD_W;2
 DL2_DL1;Dungeon Level 2;DL1_SMD;5
 DL3_DL2;Dungeon Level 3;DL2_DL1;10
+DF_W;Dead Forest;W;10

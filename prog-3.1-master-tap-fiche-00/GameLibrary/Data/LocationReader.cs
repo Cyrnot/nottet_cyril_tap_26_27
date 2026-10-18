@@ -17,7 +17,7 @@ namespace GameLibrary.Data
 
             for (int csv_row_index = 0; csv_row_index < csv_table.GetRowCount(); csv_row_index++)
             {
-                int human_readable_row_number = csv_row_index + 2;
+                int file_row_number = csv_row_index + 2;
                 CsvRow row_content = csv_table.GetRowAtIndex(csv_row_index);
 
                 bool has_error = false;
@@ -29,19 +29,19 @@ namespace GameLibrary.Data
 
                 if (string.IsNullOrEmpty(location_id))
                 {
-                    error_report.AddError(csv_table.GetFileName(), human_readable_row_number, $"{location_id} is not a valid reference");
+                    error_report.AddError(csv_table.GetFileName(), file_row_number, $"{location_id} is not a valid reference");
                     has_error = true;
                 }
 
-                if (!location_id_table.TryAdd(location_id, human_readable_row_number))
+                if (!location_id_table.TryAdd(location_id, file_row_number))
                 {
-                    error_report.AddError(csv_table.GetFileName(), human_readable_row_number, $"{location_id} ID is already present.");
+                    error_report.AddError(csv_table.GetFileName(), file_row_number, $"{location_id} ID is already present.");
                     has_error = true;
                 }
 
                 if (string.IsNullOrEmpty(location_name))
                 {
-                    error_report.AddError(csv_table.GetFileName(), human_readable_row_number, $"{location_name} is not a valid name");
+                    error_report.AddError(csv_table.GetFileName(), file_row_number, $"{location_name} is not a valid name");
                     has_error = true;
                 }
 
@@ -51,13 +51,14 @@ namespace GameLibrary.Data
                     {
                         if (location_travel_minutes < 0)
                         {
-                            error_report.AddError(csv_table.GetFileName(), human_readable_row_number, $"Travel time has to be >= 0.");
+                            error_report.AddError(csv_table.GetFileName(), file_row_number, $"Travel time has to be >= 0.");
                             has_error = true;
                         }
                     }
                     else
                     {
-                        error_report.AddError(csv_table.GetFileName(), human_readable_row_number, $"{row_content.GetCellAtIndex(3)} is not a valid location travel minute, it should be integer.");
+                        error_report.AddError(csv_table.GetFileName(), file_row_number, $"{row_content.GetCellAtIndex(3)} is not a valid location travel minute, it should be integer.");
+                        has_error = true;
                     }
                 }
 
@@ -94,9 +95,7 @@ namespace GameLibrary.Data
                     }
                 }
             }
-
             return location_data_table;
         }
-
     }
 }

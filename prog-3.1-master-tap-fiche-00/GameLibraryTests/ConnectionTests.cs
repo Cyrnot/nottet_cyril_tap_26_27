@@ -13,7 +13,7 @@ namespace GameLibraryTests
             Connection connection = new Connection(destination, 3.0f);
 
             Assert.That(connection.GetDestinationLocation(), Is.EqualTo(destination));
-            Assert.That(connection.GetTimeToReachDestination(), Is.EqualTo(3.0f).Within(0.001f));
+            Assert.That(connection.GetTimeToReachDestination(), Is.EqualTo(3.0f));
         }
 
         private LocationComponent CreateLocation(string locationName)

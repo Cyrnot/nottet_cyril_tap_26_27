@@ -8,7 +8,7 @@ namespace GameLibrary.Csv
 {
     public class CsvReader
     {
-        public CsvTable Read(string file_name, string content, ContentReport report)
+        public static CsvTable Read(string file_name, string content, ContentReport report)
         {
             CsvTable csv_table = new CsvTable(file_name);
             string[] line_table = content.Split('\n');

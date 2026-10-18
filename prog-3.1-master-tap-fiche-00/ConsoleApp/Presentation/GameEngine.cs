@@ -2,7 +2,9 @@
 using GameLibrary.Core.Components;
 using GameLibrary.Core.Events;
 using GameLibrary.Csv;
+using GameLibrary.Data;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -18,6 +20,7 @@ namespace GameConsole.Presentation
 
         private EventManager _eventManager = new EventManager();
         private GameManager _gameManager;
+        private WorldBuilder _worldBuilder;
 
         private LogManager _logManager;
 
@@ -34,7 +37,33 @@ namespace GameConsole.Presentation
 
             float last_time = GetCurrentTime();
 
-            _gameManager = new GameManager(_eventManager);
+            ContentReport report = new ContentReport();
+            List<LocationData> location_data_table = null;
+
+            string locations_content = GetFileContent("locations.csv", report);
+
+            if (locations_content != null)
+            {
+                CsvTable location_csv_table = CsvReader.Read("locations.csv", locations_content, report);
+
+                if (location_csv_table != null)
+                {
+                    location_data_table = LocationReader.Read(location_csv_table, report);
+                }
+            }
+
+            if (report.GetErrorCount() > 0)
+            {
+                for (int error_index = 0; error_index < report.GetErrorCount(); error_index++)
+                {
+                    _eventManager.TriggerEvent(new LogMessageGameEvent(report.GetErrorTextAtIndex(error_index)));
+                    Console.WriteLine(report.GetErrorTextAtIndex(error_index));
+                }
+            }
+            else
+            {
+                _gameManager = new GameManager(_eventManager, new WorldBuilder(location_data_table));
+            }
 
             while (!_gameManager.GetShouldQuit())
             {

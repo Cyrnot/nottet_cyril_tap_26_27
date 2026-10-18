@@ -29,6 +29,8 @@ namespace GameLibrary.Core.States
             {
                 _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
 
+                _gameManager.BeginExploration();
+
                 _stateMachine.ChangeState(new ExploringState(_stateMachine, _gameManager, _eventManager));
             }
             else if (game_action_game_event._gameActionType == GameActionType.QUIT)

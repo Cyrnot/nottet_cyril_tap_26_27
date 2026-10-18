@@ -18,7 +18,6 @@ namespace GameLibrary.Core.States
         public void Enter()
         {
             _eventManager.RegisterToEvent<GameActionGameEvent>(OnGameActionGameEvent);
-            _gameManager.BeginExploration();
         }
 
         private void OnGameActionGameEvent(IGameEvent game_event)
