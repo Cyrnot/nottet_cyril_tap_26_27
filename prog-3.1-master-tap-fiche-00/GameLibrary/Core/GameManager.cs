@@ -116,6 +116,12 @@ public class GameManager
     public void SetCurrentLocation(LocationComponent current_location)
     {
         _currentLocation = current_location;
+        SetSelectedChildLocationIndex(-1);
+    }
+
+    public void SetSelectedChildLocationIndex(int selected_child_location_index)
+    {
+        _selectedChildLocationIndex = selected_child_location_index;
     }
 
     public bool GetIsMenuStateActive()
@@ -132,4 +138,5 @@ public class GameManager
     {
         return _gameFlowStateStateMachine.GetCurrentState();
     }
+
 }

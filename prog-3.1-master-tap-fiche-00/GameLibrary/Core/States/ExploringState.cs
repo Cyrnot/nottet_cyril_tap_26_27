@@ -86,7 +86,6 @@ namespace GameLibrary.Core.States
         public void Exit()
         {
             _eventManager.UnregisterFromEvent<GameActionGameEvent>(OnGameActionGameEvent);
-            _gameManager.SetCurrentLocation(null);
         }
 
         public void FixedUpdate(float fixed_elapsed_time)

@@ -12,8 +12,4 @@
       <ProjectReference Include="..\GameLibrary\GameLibrary.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Data\" />
-    </ItemGroup>
-
 </Project>
