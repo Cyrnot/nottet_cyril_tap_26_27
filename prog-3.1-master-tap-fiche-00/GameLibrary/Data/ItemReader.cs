@@ -68,8 +68,7 @@ namespace GameLibrary.Data
                 }
                 else
                 {
-                    report.AddError(csv_table.GetFileName(), file_row_number,
-                                    $"{row_content.GetCellAtIndex(4)} is not a valid quantity, it should be integer.");
+                    report.AddError(csv_table.GetFileName(), file_row_number, $"{row_content.GetCellAtIndex(4)} is not a valid quantity, it should be integer.");
                 }
 
                 if (!has_error)

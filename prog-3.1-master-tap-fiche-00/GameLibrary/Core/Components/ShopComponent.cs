@@ -66,5 +66,10 @@ namespace GameLibrary.Core.Components
             return false;
         }
 
+        public ShopData GetShopData()
+        {
+            return _shopData;
+
+        }
     }
 }

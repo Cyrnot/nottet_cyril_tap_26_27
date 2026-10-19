@@ -43,19 +43,36 @@ namespace GameLibrary.Core.States
             else if (game_action_game_event._gameActionType == GameActionType.CONFIRM)
             {
                 int selected_child_location_index = _gameManager.GetSelectedDestinationIndex();
-                int current_location_child_count = _gameManager.GetCurrentLocation().GetChildLocationCount();
 
                 _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
 
-                if (selected_child_location_index >= 0 && current_location_child_count > 0)
+                if (selected_child_location_index != -1)
                 {
                     LocationComponent current_location = _gameManager.GetCurrentLocation();
+                    Connection selected_connection = current_location.GetChildLocationAtIndex(selected_child_location_index);
 
-                    Connection selected_way = current_location.GetChildLocationAtIndex(selected_child_location_index);
-                    _eventManager.TriggerEvent(new LogMessageGameEvent($"Location changed from {current_location.GetName()} to {selected_way.GetDestinationLocation().GetName()} - time taken: {selected_way.GetTimeToReachDestination()}."));
-                    current_location = selected_way.GetDestinationLocation();
-                    _gameManager.SetCurrentLocation(current_location);
-                    _gameManager.SetSelectedDestinationIndex(-1);
+                    LocationComponent destination_location = selected_connection.GetDestinationLocation();
+
+                    _eventManager.TriggerEvent(new LogMessageGameEvent($"Location changed from {current_location.GetName()} to {destination_location.GetName()} - time taken: {selected_connection.GetTimeToReachDestination()}."));
+                    _gameManager.SetCurrentLocation(destination_location);
+
+                    ShopComponent shop_component = destination_location.GetGameObject().GetComponent<ShopComponent>();
+
+                    if (shop_component != null)
+                    {
+                        if (shop_component.GetIsOpen())
+                        {
+                            _stateMachine.ChangeState(new ShopOpenState(_stateMachine, _gameManager, _eventManager, shop_component));
+                        }
+                        else
+                        {
+                            _stateMachine.ChangeState(new ShopClosedState(_stateMachine, _gameManager, _eventManager, shop_component));
+                        }
+                    }
+                    else
+                    {
+                        _eventManager.TriggerEvent(new LogMessageGameEvent($"No ShopComponent on {destination_location.GetName()}"));
+                    }
                 }
             }
             else if (game_action_game_event._gameActionType == GameActionType.CANCEL)

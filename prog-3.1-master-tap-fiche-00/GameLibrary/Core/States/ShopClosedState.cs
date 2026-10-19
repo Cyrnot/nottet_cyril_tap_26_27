@@ -46,7 +46,7 @@ namespace GameLibrary.Core.States
 
         public void FixedUpdate(float fixed_elapsed_time)
         {
-            if (!_shopComponent.GetIsOpen())
+            if (_shopComponent.GetIsOpen())
             {
                 _stateMachine.ChangeState(new ShopOpenState(_stateMachine, _gameManager, _eventManager, _shopComponent));
             }
@@ -54,7 +54,12 @@ namespace GameLibrary.Core.States
 
         public void Update(float elapsed_time)
         {
-            throw new NotImplementedException();
+            
+        }
+
+        public ShopComponent GetShopComponent()
+        {
+            return _shopComponent;
         }
     }
 }

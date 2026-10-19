@@ -1,3 +1,3 @@
 LocationId;OpeningHour;ClosingHour
-GS_DT;09:00;18:00
-TS_RT;10:00;17:00
+GS_DT;09;18
+TS_RT;10;17

@@ -7,10 +7,14 @@ namespace GameLibrary.Data
     public class WorldBuilder
     {
         private readonly List<LocationData> _locationDataTable;
+        private readonly List<ShopData> _shopDataTable;
+        private readonly List<ItemData> _itemDataTable;
 
-        public WorldBuilder(List<LocationData> location_data_table)
+        public WorldBuilder(List<LocationData> location_data_table, List<ShopData> shopDataTable, List<ItemData> itemDataTable)
         {
             _locationDataTable = location_data_table;
+            _shopDataTable = shopDataTable;
+            _itemDataTable = itemDataTable;
         }
 
         public LocationComponent Build(EventManager event_manager)
@@ -49,6 +53,13 @@ namespace GameLibrary.Data
                 {
                     location = location_component;
                 }
+            }
+
+            for (int shop_index = 0; shop_index < _shopDataTable.Count; shop_index++)
+            {
+                GameObject shop_game_object = game_object_table[_shopDataTable[shop_index]._locationId];
+
+                shop_game_object.AddComponent(new ShopComponent(_shopDataTable[shop_index], _itemDataTable, shop_game_object));
             }
 
             return location;

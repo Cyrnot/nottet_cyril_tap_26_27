@@ -42,8 +42,13 @@ namespace GameConsole.Presentation
 
             ContentReport report = new ContentReport();
             List<LocationData> location_data_table = null;
+            List<ShopData> shop_data_table = null;
+            List<ItemData> item_data_table = null;
 
             string locations_content = GetFileContent("locations.csv", report);
+            string items_content = GetFileContent("Item.csv", report);
+            string shops_content = GetFileContent("Shop.csv", report);
+
 
             if (locations_content != null)
             {
@@ -55,6 +60,28 @@ namespace GameConsole.Presentation
                 }
             }
 
+            if (shops_content != null)
+            {
+                CsvTable shop_csv_table = CsvReader.Read("Shop.csv", shops_content, report);
+
+                if (shop_csv_table != null)
+                {
+                    shop_data_table = ShopReader.Read(shop_csv_table, location_data_table, report);
+                }
+            }
+
+            if (items_content != null)
+            {
+                CsvTable item_csv_table = CsvReader.Read("Item.csv", items_content, report);
+
+                if (item_csv_table != null)
+                {
+                    item_data_table = ItemReader.Read(item_csv_table, shop_data_table, report);
+                }
+            }
+
+
+
             if (report.GetErrorCount() > 0)
             {
                 for (int error_index = 0; error_index < report.GetErrorCount(); error_index++)
@@ -65,38 +92,42 @@ namespace GameConsole.Presentation
             }
             else
             {
-                _gameManager = new GameManager(_eventManager, new WorldBuilder(location_data_table));
+                _gameManager = new GameManager(_eventManager, new WorldBuilder(location_data_table,shop_data_table,item_data_table));
 
                 _screenRendererTable.Add(typeof(MainMenuState), new MainMenuRenderer());
                 _screenRendererTable.Add(typeof(ExploringState), new ExploringRenderer());
-            }
+                _screenRendererTable.Add(typeof(ShopClosedState), new ShopClosedRenderer());
+                _screenRendererTable.Add(typeof(ShopOpenState), new ShopOpenRenderer());
 
-            while (!_gameManager.GetShouldQuit())
-            {
-                float loop_start_time = GetCurrentTime();
-                float elapsed_time = loop_start_time - last_time;
-
-                lag += elapsed_time;
-
-                ProcessInput();
-
-                while (lag >= FIXED_FRAME_TIME)
+                while (!_gameManager.GetShouldQuit())
                 {
-                    FixedUpdate(FIXED_FRAME_TIME);
+                    float loop_start_time = GetCurrentTime();
+                    float elapsed_time = loop_start_time - last_time;
 
-                    _eventManager.ProcessDelayEvents();
+                    lag += elapsed_time;
 
-                    lag -= FIXED_FRAME_TIME;
+                    ProcessInput();
+
+                    while (lag >= FIXED_FRAME_TIME)
+                    {
+                        FixedUpdate(FIXED_FRAME_TIME);
+
+                        _eventManager.ProcessDelayEvents();
+
+                        lag -= FIXED_FRAME_TIME;
+                    }
+
+                    Update(elapsed_time);
+
+                    Render();
+
+                    last_time = loop_start_time;
                 }
 
-                Update(elapsed_time);
-
-                Render();
-
-                last_time = loop_start_time;
+                _eventManager.TriggerEvent(new LogMessageGameEvent("Goodbye !"));
             }
 
-            _eventManager.TriggerEvent(new LogMessageGameEvent("Goodbye !"));
+            
         }
         private static string GetFileContent(string file_name, ContentReport report)
         {

@@ -14,8 +14,9 @@ namespace GameLibraryTests
         public void Build_ChildDeclaredBeforeParentIsLinked()
         {
             List<LocationData> location_data_table = new List<LocationData>();
+            List<ShopData> shop_data_table = new List<ShopData>();
             EventManager eventManager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table);
+            WorldBuilder builder = new WorldBuilder(location_data_table, shop_data_table, null);
 
             location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
             location_data_table.Add(new LocationData("W", "World", "", 0));
@@ -30,8 +31,9 @@ namespace GameLibraryTests
         {
             int travel_time = 5;
             List<LocationData> location_data_table = new List<LocationData>();
+            List<ShopData> shop_data_table = new List<ShopData>();
             EventManager eventManager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table);
+            WorldBuilder builder = new WorldBuilder(location_data_table, shop_data_table, null);
 
 
             location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", travel_time));
@@ -50,7 +52,7 @@ namespace GameLibraryTests
         {
             List<LocationData> location_data_table = new List<LocationData>();
             EventManager eventManager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table);
+            WorldBuilder builder = new WorldBuilder(location_data_table, null, null);
 
             location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
 

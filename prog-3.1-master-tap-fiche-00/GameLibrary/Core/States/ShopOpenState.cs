@@ -89,5 +89,20 @@ namespace GameLibrary.Core.States
         {
 
         }
+
+        public ShopComponent GetShopComponent()
+        {
+            return _shopComponent;
+        }
+
+        public string GetText()
+        {
+            return _text;
+        }
+
+        public int GetSelectedItemIndex()
+        {
+            return _selectedItemIndex;
+        }
     }
 }
