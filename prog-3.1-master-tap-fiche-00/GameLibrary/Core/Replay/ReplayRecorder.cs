@@ -28,7 +28,18 @@ namespace GameLibrary.Core.Replay
         {
             GameActionGameEvent game_action_game_event = game_event as GameActionGameEvent;
 
-            Record(_fixedStepClock.GetFixedStepIndex(), game_action_game_event._gameActionType);
+            int fixed_step_index;
+
+            if (game_action_game_event._fixedStepIndex >= 0)
+            {
+                fixed_step_index = game_action_game_event._fixedStepIndex;
+            }
+            else
+            {
+                fixed_step_index = _fixedStepClock.GetFixedStepIndex();
+            }
+
+            Record(fixed_step_index, game_action_game_event._gameActionType);
         }
 
         public int GetActionDataCount()

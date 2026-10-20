@@ -9,5 +9,10 @@ namespace GameLibrary.Core.Events
     public class SaveRequestedGameEvent : IGameEvent
     {
         public readonly string _saveText;
+
+        public SaveRequestedGameEvent(string save_text)
+        {
+            _saveText = save_text;
+        }
     }
 }

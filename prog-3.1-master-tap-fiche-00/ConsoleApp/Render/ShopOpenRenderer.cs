@@ -48,7 +48,7 @@ namespace GameConsole.Render
                     }
                     else
                     {
-                        render_manager.Draw(0, item_display_index + item_index, $"{inventory_component.GetEntryAtIndex(item_index).GetItem()._name} ({inventory_component.GetEntryAtIndex(item_index).GetItem()._price}$) - qty: out of stock", ConsoleColor.DarkRed, ConsoleColor.Black);
+                        render_manager.Draw(0, item_display_index + item_index, $"{inventory_component.GetEntryAtIndex(item_index).GetItem()._name} (   {inventory_component.GetEntryAtIndex(item_index).GetItem()._price}$) - qty: out of stock", ConsoleColor.DarkRed, ConsoleColor.Black);
                     }
                 }
             }

@@ -48,11 +48,18 @@ namespace GameConsole.Save
         {
             SaveRequestedGameEvent save_event = game_event as SaveRequestedGameEvent;
 
+            if (save_event == null)
+            {
+                _eventManager.TriggerEvent(new LogMessageGameEvent("The save is empty or invalid."));
+            }
+
             try
             {
                 string file_name = WriteNewFile(SAVE_PREFIX, save_event._saveText);
 
                 _gameManager.AddSave(file_name, save_event._saveText);
+
+                _eventManager.TriggerEvent(new LogMessageGameEvent($"Save created at: {_savesDirectoryPath}{file_name}"));
             }
             catch (IOException exception)
             {

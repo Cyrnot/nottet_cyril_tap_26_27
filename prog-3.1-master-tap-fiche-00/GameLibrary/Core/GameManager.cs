@@ -42,14 +42,9 @@ public class GameManager : IFixedStepClock
         GameObject game_object_test = new GameObject("game_object_test");
 
         _eventManager.RegisterToEvent<RegisterGameObjectGameEvent>(OnRegisterGameObjectGameEvent);
-        _eventManager.RegisterToEvent<UnregisterGameObjectGameEvent>(OnUnregisterGameObjectGameEvent);
+        _eventManager.RegisterToEvent<UnregisterGameObjectGameEvent>(OnUnregisterGameObjectGameEvent);  
 
         _eventManager.TriggerDelayedEvent(new RegisterGameObjectGameEvent(game_object_test));
-    }
-
-    public void BeginExploration()
-    {
-
     }
 
     public void StartNewGame(int seed)
@@ -69,6 +64,16 @@ public class GameManager : IFixedStepClock
         LocationComponent location = _worldBuilder.Build(_eventManager);
 
         _currentLocation = location;   
+    }
+
+    public void QuitGame()
+    {
+        _replayRecorder.StopRecording();
+        SetCurrentLocation(null);
+
+        string save_text = _replayRecorder.GetCsvTextEnd(_fixedStepIndex);
+
+        _eventManager.TriggerEvent(new SaveRequestedGameEvent(save_text));
     }
 
     private void OnRegisterGameObjectGameEvent(IGameEvent game_event)
@@ -184,7 +189,7 @@ public class GameManager : IFixedStepClock
 
         if (content_report.GetErrorCount() > 0)
         {
-            file_name += " ERROR ";
+            file_name += " Damaged ";
 
             for (int error_index = 0; error_index < content_report.GetErrorCount(); error_index++)
             {

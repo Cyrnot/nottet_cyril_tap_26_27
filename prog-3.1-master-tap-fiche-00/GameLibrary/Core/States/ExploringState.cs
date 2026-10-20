@@ -95,6 +95,7 @@ namespace GameLibrary.Core.States
                 }
                 else
                 {
+                    _gameManager.QuitGame();
                     _stateMachine.ChangeState(new MainMenuState(_stateMachine, _gameManager, _eventManager));
                 }
 

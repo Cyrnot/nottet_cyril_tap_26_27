@@ -23,9 +23,11 @@ namespace GameLibrary.Core.Replay
 
         public void FixedUpdate(float fixed_elapsed_time)
         {
-            if (!GetIsFinished(_fixedStepClock.GetFixedStepIndex()))
+            int fixed_step_index = _fixedStepClock.GetFixedStepIndex();
+
+            if (!GetIsFinished(fixed_step_index))
             {
-                TriggerActionsOfStep(_fixedStepClock.GetFixedStepIndex() + 1, _eventManager);
+                TriggerActionsOfStep(fixed_step_index, _eventManager);
             }
         }
 
@@ -53,7 +55,7 @@ namespace GameLibrary.Core.Replay
 
                 if (_replayData._endFixedStepIndex != fixed_step_index)
                 {
-                    event_manager.TriggerDelayedEvent(new GameActionGameEvent(game_action_type));
+                    event_manager.TriggerDelayedEvent(new GameActionGameEvent(game_action_type, _replayData._actionTable[_currentReplayIndex]._fixedStepIndex));
                 }
 
                 ++_currentReplayIndex;

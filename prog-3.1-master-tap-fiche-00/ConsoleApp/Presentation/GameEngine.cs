@@ -1,4 +1,5 @@
 ﻿using GameConsole.Render;
+using GameConsole.Save;
 using GameLibrary.Core;
 using GameLibrary.Core.Components;
 using GameLibrary.Core.Events;
@@ -27,9 +28,17 @@ namespace GameConsole.Presentation
 
         private readonly Dictionary<Type, IScreenRenderer> _screenRendererTable = new Dictionary<Type, IScreenRenderer>();
 
+        private static readonly string DIRECTORY_PATH = "../../../";
+        private static readonly string SAVES_DIRECTORY_PATH = $"{DIRECTORY_PATH}Saves/";
+        private static readonly string DATA_DIRECTORY_PATH = $"{DIRECTORY_PATH}Data/";
+        private static readonly string LOG_FILE_PATH = $"{DIRECTORY_PATH}debug.log";
+
+        private SaveFileWriter _saveFileWriter;
+        private SaveFileLoader _saveFileLoader;
+
         public GameEngine()
         {
-            _logManager = new LogManager(new LogFileWriter("../../../debug.log"), _eventManager);
+            _logManager = new LogManager(new LogFileWriter(LOG_FILE_PATH), _eventManager);
         }
 
         public void Run()
@@ -112,45 +121,56 @@ namespace GameConsole.Presentation
             {
                 _gameManager = new GameManager(_eventManager, game_content_data);
 
+                _saveFileWriter = new SaveFileWriter(SAVES_DIRECTORY_PATH, _gameManager, _eventManager);
+                _saveFileLoader = new SaveFileLoader(SAVES_DIRECTORY_PATH, _gameManager, _eventManager);
+                _saveFileLoader.LoadAllSaves();
+
                 _screenRendererTable.Add(typeof(MainMenuState), new MainMenuRenderer());
                 _screenRendererTable.Add(typeof(ExploringState), new ExploringRenderer());
                 _screenRendererTable.Add(typeof(ShopClosedState), new ShopClosedRenderer());
                 _screenRendererTable.Add(typeof(ShopOpenState), new ShopOpenRenderer());
 
-                while (!_gameManager.GetShouldQuit())
+                try
                 {
-                    float loop_start_time = GetCurrentTime();
-                    float elapsed_time = loop_start_time - last_time;
-
-                    lag += elapsed_time;
-
-                    ProcessInput();
-
-                    while (lag >= FIXED_FRAME_TIME)
+                    while (!_gameManager.GetShouldQuit())
                     {
-                        FixedUpdate(FIXED_FRAME_TIME);
+                        float loop_start_time = GetCurrentTime();
+                        float elapsed_time = loop_start_time - last_time;
 
-                        _eventManager.ProcessDelayedEvents();
+                        lag += elapsed_time;
 
-                        lag -= FIXED_FRAME_TIME;
+                        ProcessInput();
+
+                        while (lag >= FIXED_FRAME_TIME)
+                        {
+                            FixedUpdate(FIXED_FRAME_TIME);
+
+                            _eventManager.ProcessDelayedEvents();
+
+                            lag -= FIXED_FRAME_TIME;
+                        }
+
+                        Update(elapsed_time);
+
+                        Render();
+
+                        last_time = loop_start_time;
                     }
 
-                    Update(elapsed_time);
-
-                    Render();
-
-                    last_time = loop_start_time;
+                    _eventManager.TriggerEvent(new LogMessageGameEvent("Goodbye !"));
                 }
-
-                _eventManager.TriggerEvent(new LogMessageGameEvent("Goodbye !"));
+                catch (Exception exception)
+                {
+                    _saveFileWriter.WriteCrashSave(_gameManager.GetSaveText());
+                    _eventManager.TriggerEvent(new LogMessageGameEvent($"The game crashed: {exception.Message}"));
+                    throw;
+                }
             }
-
-
         }
         private static string GetFileContent(string file_name, ContentReport report)
         {
             string file_content = null;
-            string file_path = $"../../../Data/{file_name}";
+            string file_path = $"{DATA_DIRECTORY_PATH}{file_name}";
 
             try
             {
