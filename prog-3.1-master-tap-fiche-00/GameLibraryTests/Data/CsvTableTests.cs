@@ -1,7 +1,7 @@
 ﻿using GameLibrary;
 using GameLibrary.Csv;
 
-namespace GameLibraryTests
+namespace GameLibraryTests.Data
 {
     public class CsvTableTests
     {

@@ -6,7 +6,7 @@ using GameLibrary.Core.States;
 using GameLibrary.Data;
 using System.Collections.Generic;
 
-namespace GameLibraryTests
+namespace GameLibraryTests.State
 {
     public class ExploringStateTests
     {
@@ -20,7 +20,7 @@ namespace GameLibraryTests
             GameObject destination_game_object = new GameObject("Destination");
             ShopData shop_data = new ShopData("TS_RT", 8, 20);
             List<ItemData> item_data_table = new List<ItemData>();
-            ShopComponent shop_component = new ShopComponent(shop_data, item_data_table, destination_game_object);
+            ShopComponent shop_component = new ShopComponent(shop_data, destination_game_object);
             LocationComponent destination_location = new LocationComponent("Shop", destination_game_object);
             GameObject current_game_object = new GameObject("Current");
             LocationComponent current_location = new LocationComponent("Current", current_game_object);

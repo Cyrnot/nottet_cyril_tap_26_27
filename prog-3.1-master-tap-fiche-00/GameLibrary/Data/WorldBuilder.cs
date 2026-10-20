@@ -6,15 +6,11 @@ namespace GameLibrary.Data
 {
     public class WorldBuilder
     {
-        private readonly List<LocationData> _locationDataTable;
-        private readonly List<ShopData> _shopDataTable;
-        private readonly List<ItemData> _itemDataTable;
+        private GameContentData _gameContentData;
 
-        public WorldBuilder(List<LocationData> location_data_table, List<ShopData> shopDataTable, List<ItemData> itemDataTable)
+        public WorldBuilder(GameContentData game_content_data)
         {
-            _locationDataTable = location_data_table;
-            _shopDataTable = shopDataTable;
-            _itemDataTable = itemDataTable;
+            _gameContentData = game_content_data;
         }
 
         public LocationComponent Build(EventManager event_manager)
@@ -23,9 +19,9 @@ namespace GameLibrary.Data
             Dictionary<string, GameObject> game_object_table = new Dictionary<string, GameObject>();
             Dictionary<string, LocationComponent> location_component_table = new Dictionary<string, LocationComponent>();
 
-            for (int location_index = 0; location_index < _locationDataTable.Count; location_index++)
+            for (int location_index = 0; location_index < _gameContentData._locationDataTable.Count; location_index++)
             {
-                LocationData location_data = _locationDataTable[location_index];
+                LocationData location_data = _gameContentData._locationDataTable[location_index];
                 GameObject location_game_object = new GameObject(location_data._id);
                 LocationComponent location_component = new LocationComponent(location_data._name, location_game_object);
 
@@ -38,9 +34,9 @@ namespace GameLibrary.Data
                 location_game_object.SetIsActive(true);
             }
 
-            for (int location_index = 0; location_index < _locationDataTable.Count; location_index++)
+            for (int location_index = 0; location_index < _gameContentData._locationDataTable.Count; location_index++)
             {
-                LocationData location_data = _locationDataTable[location_index];
+                LocationData location_data = _gameContentData._locationDataTable[location_index];
                 LocationComponent location_component = location_component_table[location_data._id];
 
                 if (!string.IsNullOrEmpty(location_data._parent))
@@ -55,11 +51,23 @@ namespace GameLibrary.Data
                 }
             }
 
-            for (int shop_index = 0; shop_index < _shopDataTable.Count; shop_index++)
+            for (int shop_index = 0; shop_index < _gameContentData._shopDataTable.Count; shop_index++)
             {
-                GameObject shop_game_object = game_object_table[_shopDataTable[shop_index]._locationId];
+                GameObject shop_game_object = game_object_table[_gameContentData._shopDataTable[shop_index]._locationId];
+                InventoryComponent inventory_component = new InventoryComponent(shop_game_object);
 
-                shop_game_object.AddComponent(new ShopComponent(_shopDataTable[shop_index], _itemDataTable, shop_game_object));
+                for (int inventory_data_index = 0; inventory_data_index < _gameContentData._inventoryDataTable.Count; inventory_data_index++)
+                {
+                    InventoryEntryData current_inventory_data = _gameContentData._inventoryDataTable[inventory_data_index];
+
+                    if (_gameContentData._shopDataTable[shop_index]._locationId == current_inventory_data._ownerId)
+                    {
+                        inventory_component.Add(_gameContentData._itemDataTable[current_inventory_data._itemId], current_inventory_data._quantity);
+                    }
+                }
+
+                shop_game_object.AddComponent(new ShopComponent(_gameContentData._shopDataTable[shop_index], shop_game_object));
+                shop_game_object.AddComponent(inventory_component);
             }
 
             return location;

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameLibraryTests
+namespace GameLibraryTests.Components
 {
     public class LocationComponentTests
     {

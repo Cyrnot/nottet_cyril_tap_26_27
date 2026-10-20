@@ -30,7 +30,7 @@ namespace GameLibraryTests
             event_manager.TriggerDelayedEvent(new LogMessageGameEvent("delayed test message"));
             event_manager.TriggerEvent(new LogMessageGameEvent("test message"));
 
-            event_manager.ProcessDelayEvents();
+            event_manager.ProcessDelayedEvents();
 
             Assert.That(fake_log_writer._logMessageTable.Count, Is.EqualTo(2));
             Assert.That(fake_log_writer._logMessageTable[0], Does.EndWith("test message\n"));

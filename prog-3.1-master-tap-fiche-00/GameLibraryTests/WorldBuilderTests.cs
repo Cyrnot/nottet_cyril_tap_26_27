@@ -13,13 +13,12 @@ namespace GameLibraryTests
         [Test]
         public void Build_ChildDeclaredBeforeParentIsLinked()
         {
-            List<LocationData> location_data_table = new List<LocationData>();
-            List<ShopData> shop_data_table = new List<ShopData>();
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>()};
             EventManager eventManager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table, shop_data_table, null);
+            WorldBuilder builder = new WorldBuilder(game_content_data);
 
-            location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
-            location_data_table.Add(new LocationData("W", "World", "", 0));
+            game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
+            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
             LocationComponent parent = builder.Build(eventManager);
             LocationComponent child = parent.GetChildLocationAtIndex(0).GetDestinationLocation();
 
@@ -30,14 +29,13 @@ namespace GameLibraryTests
         public void Build_LinkedLocationsHaveCorrectTimeToTravelInBothDirections()
         {
             int travel_time = 5;
-            List<LocationData> location_data_table = new List<LocationData>();
-            List<ShopData> shop_data_table = new List<ShopData>();
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>() };
             EventManager eventManager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table, shop_data_table, null);
+            WorldBuilder builder = new WorldBuilder(game_content_data);
 
 
-            location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", travel_time));
-            location_data_table.Add(new LocationData("W", "World", "", 0));
+            game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", travel_time));
+            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
             LocationComponent parent = builder.Build(eventManager);
             Connection connection = parent.GetChildLocationAtIndex(0);
             LocationComponent child = connection.GetDestinationLocation();
@@ -50,11 +48,11 @@ namespace GameLibraryTests
         [Test]
         public void Build_MissingParentArgumentException()
         {
-            List<LocationData> location_data_table = new List<LocationData>();
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>() };
             EventManager eventManager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table, null, null);
+            WorldBuilder builder = new WorldBuilder(game_content_data);
 
-            location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
+            game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
 
             Assert.Throws<KeyNotFoundException>(() => builder.Build(eventManager));
         }

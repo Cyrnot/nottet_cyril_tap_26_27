@@ -14,13 +14,15 @@ namespace GameLibrary.Core.States
         private GameManager _gameManager;
         private EventManager _eventManager;
         private ShopComponent _shopComponent;
+        private InventoryComponent _InventoryComponent;
 
-        public ShopClosedState(StateMachine stateMachine, GameManager gameManager, EventManager eventManager, ShopComponent shopComponent)
+        public ShopClosedState(StateMachine state_machine, GameManager game_manager, EventManager event_manager, ShopComponent shop_component, InventoryComponent inventory_component)
         {
-            _stateMachine = stateMachine;
-            _gameManager = gameManager;
-            _eventManager = eventManager;
-            _shopComponent = shopComponent;
+            _stateMachine = state_machine;
+            _gameManager = game_manager;
+            _eventManager = event_manager;
+            _shopComponent = shop_component;
+            _InventoryComponent = inventory_component;
         }
 
         public void Enter()
@@ -48,7 +50,7 @@ namespace GameLibrary.Core.States
         {
             if (_shopComponent.GetIsOpen())
             {
-                _stateMachine.ChangeState(new ShopOpenState(_stateMachine, _gameManager, _eventManager, _shopComponent));
+                _stateMachine.ChangeState(new ShopOpenState(_stateMachine, _gameManager, _eventManager, _shopComponent, _InventoryComponent));
             }
         }
 

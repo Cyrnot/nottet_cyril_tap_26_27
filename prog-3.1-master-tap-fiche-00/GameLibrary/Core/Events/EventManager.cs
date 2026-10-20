@@ -34,9 +34,10 @@
 
             if (_eventTypeTable.ContainsKey(event_type))
             {
-                for (int event_index = 0; event_index < _eventTypeTable[event_type].Count; event_index++)
+                List<Action<IGameEvent>> actions = new List<Action<IGameEvent>>(_eventTypeTable[event_type]);
+                for (int event_index = 0; event_index < actions.Count; event_index++)
                 {
-                    Action<IGameEvent> action = _eventTypeTable[event_type][event_index];
+                    Action<IGameEvent> action = actions[event_index];
                     action(game_event);
                 }
             }
@@ -47,7 +48,7 @@
             _eventTable.Add(game_event);
         }
 
-        public void ProcessDelayEvents()
+        public void ProcessDelayedEvents()
         {
             while (_eventTable.Count > 0)
             {
@@ -57,7 +58,8 @@
 
                 if (_eventTypeTable.TryGetValue(game_event.GetType(), out List<Action<IGameEvent>> actions))
                 {
-                    foreach (Action<IGameEvent> action in actions)
+                    List<Action<IGameEvent>> actions_copy = new List<Action<IGameEvent>>(actions);
+                    foreach (Action<IGameEvent> action in actions_copy)
                     {
                         action(game_event);
                     }

@@ -57,16 +57,17 @@ namespace GameLibrary.Core.States
                     _gameManager.SetCurrentLocation(destination_location);
 
                     ShopComponent shop_component = destination_location.GetGameObject().GetComponent<ShopComponent>();
+                    InventoryComponent inventory_component = destination_location.GetGameObject().GetComponent<InventoryComponent>();
 
                     if (shop_component != null)
                     {
                         if (shop_component.GetIsOpen())
                         {
-                            _stateMachine.ChangeState(new ShopOpenState(_stateMachine, _gameManager, _eventManager, shop_component));
+                            _stateMachine.ChangeState(new ShopOpenState(_stateMachine, _gameManager, _eventManager, shop_component, inventory_component));
                         }
                         else
                         {
-                            _stateMachine.ChangeState(new ShopClosedState(_stateMachine, _gameManager, _eventManager, shop_component));
+                            _stateMachine.ChangeState(new ShopClosedState(_stateMachine, _gameManager, _eventManager, shop_component, inventory_component));
                         }
                     }
                     else

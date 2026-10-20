@@ -25,8 +25,7 @@ namespace GameLibrary.Csv
                     }
                     else if (cells.Length != csv_table.GetColumnCount())
                     {
-                        report.AddError(file_name, line_number, $"{cells.Length} values found, " +
-                       $"{csv_table.GetColumnCount()} expected.");
+                        report.AddError(file_name, line_number, $"{cells.Length} values found, " + $"{csv_table.GetColumnCount()} expected.");
                     }
                     else
                     {

@@ -2,7 +2,7 @@
 using GameLibrary.Csv;
 using GameLibrary.Data;
 
-namespace GameLibraryTests
+namespace GameLibraryTests.Data
 {
     public class ShopReaderTests
     {

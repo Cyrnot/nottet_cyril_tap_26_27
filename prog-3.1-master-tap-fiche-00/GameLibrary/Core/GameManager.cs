@@ -1,29 +1,40 @@
 ﻿using GameLibrary.Core.Components;
 using GameLibrary.Core.Events;
+using GameLibrary.Core.Replay;
 using GameLibrary.Core.States;
+using GameLibrary.Csv;
 using GameLibrary.Data;
+using GameLibrary.Replay;
 
 namespace GameLibrary.Core;
 
-public class GameManager
+public class GameManager : IFixedStepClock
 {
     private readonly List<GameObject> _gameObjectTable = new List<GameObject>();
+    private readonly Dictionary<string, string> _saveTable = new Dictionary<string, string>();
     private readonly EventManager _eventManager;
     private readonly StateMachine _gameFlowStateStateMachine;
     private readonly WorldBuilder _worldBuilder;
     private LocationComponent _currentLocation;
+
+    private ReplayRecorder _replayRecorder;
+    private ReplayPlayer _replayPlayer;
+
+    private Random _random;
 
     private int _selectedChildLocationIndex = -1;
 
     private bool _shouldQuit = false;
     private bool _isMenuStateActive = true;
 
+    private int _fixedStepIndex = 0;
 
 
-    public GameManager(EventManager event_manager, WorldBuilder world_builder)
+
+    public GameManager(EventManager event_manager, GameContentData game_content_data)
     {
         _eventManager = event_manager;
-        _worldBuilder = world_builder;
+        _worldBuilder = new WorldBuilder(game_content_data);
 
         _gameFlowStateStateMachine = new StateMachine(_eventManager);
         _gameFlowStateStateMachine.SetInitialState(new MainMenuState(_gameFlowStateStateMachine, this, _eventManager));
@@ -38,9 +49,26 @@ public class GameManager
 
     public void BeginExploration()
     {
+
+    }
+
+    public void StartNewGame(int seed)
+    {
+        if (_replayRecorder != null)
+        {
+            _replayRecorder.StopRecording();
+            _gameObjectTable.Clear();
+        }
+
+        _eventManager.TriggerEvent(new LogMessageGameEvent($"seed : {seed}"));
+
+        _random = new Random(seed);
+        _replayRecorder = new ReplayRecorder(seed, _eventManager, this);
+        _replayPlayer = null;
+        _fixedStepIndex = 0;
         LocationComponent location = _worldBuilder.Build(_eventManager);
 
-        _currentLocation = location;
+        _currentLocation = location;   
     }
 
     private void OnRegisterGameObjectGameEvent(IGameEvent game_event)
@@ -81,6 +109,15 @@ public class GameManager
                 game_object.FixedUpdate(fixed_elapsed_time);
             }
         }
+
+        if (_replayPlayer != null)
+        {
+            _replayPlayer.FixedUpdate(fixed_elapsed_time);
+        }
+
+        _gameFlowStateStateMachine.FixedUpdate(fixed_elapsed_time);
+
+        _fixedStepIndex++;
     }
 
     public bool GetShouldQuit()
@@ -139,4 +176,46 @@ public class GameManager
         return _gameFlowStateStateMachine.GetCurrentState();
     }
 
+    public void AddSave(string file_name, string save)
+    {
+        ContentReport content_report = new ContentReport();
+        CsvTable csv_table = CsvReader.Read(file_name, save, content_report);
+        ReplayData replay_save_data = ReplayReader.Read(csv_table, content_report);
+
+        if (content_report.GetErrorCount() > 0)
+        {
+            file_name += " ERROR ";
+
+            for (int error_index = 0; error_index < content_report.GetErrorCount(); error_index++)
+            {
+                _eventManager.TriggerEvent(new LogMessageGameEvent(content_report.GetErrorTextAtIndex(error_index)));
+            }
+        }
+
+        _saveTable.Add(file_name, save);
+    }
+
+    public string GetSaveText()
+    {
+        string save_text = "";
+
+        if (_replayRecorder != null)
+        {
+            save_text = _replayRecorder.GetCsvTextWithoutEnd();
+        }
+
+        return save_text;
+    }
+
+    public int GetFixedStepIndex()
+    {
+        return _fixedStepIndex;
+    }
+
+    public void LoadReplay(ReplayData replay_data)
+    {
+        StartNewGame(replay_data._seed);
+
+        _replayPlayer = new ReplayPlayer(replay_data, _eventManager, this);
+    }
 }

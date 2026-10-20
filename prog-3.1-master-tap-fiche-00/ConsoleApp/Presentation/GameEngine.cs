@@ -41,13 +41,14 @@ namespace GameConsole.Presentation
             float last_time = GetCurrentTime();
 
             ContentReport report = new ContentReport();
-            List<LocationData> location_data_table = null;
-            List<ShopData> shop_data_table = null;
-            List<ItemData> item_data_table = null;
+
+            GameContentData game_content_data = new GameContentData();
 
             string locations_content = GetFileContent("locations.csv", report);
             string items_content = GetFileContent("Item.csv", report);
             string shops_content = GetFileContent("Shop.csv", report);
+            string inventory_content = GetFileContent("Inventory.csv", report);
+            string heroes_content = GetFileContent("Hero.csv", report);
 
 
             if (locations_content != null)
@@ -56,7 +57,7 @@ namespace GameConsole.Presentation
 
                 if (location_csv_table != null)
                 {
-                    location_data_table = LocationReader.Read(location_csv_table, report);
+                    game_content_data._locationDataTable = LocationReader.Read(location_csv_table, report);
                 }
             }
 
@@ -66,7 +67,7 @@ namespace GameConsole.Presentation
 
                 if (shop_csv_table != null)
                 {
-                    shop_data_table = ShopReader.Read(shop_csv_table, location_data_table, report);
+                    game_content_data._shopDataTable = ShopReader.Read(shop_csv_table, game_content_data._locationDataTable, report);
                 }
             }
 
@@ -76,11 +77,28 @@ namespace GameConsole.Presentation
 
                 if (item_csv_table != null)
                 {
-                    item_data_table = ItemReader.Read(item_csv_table, shop_data_table, report);
+                    game_content_data._itemDataTable = ItemReader.Read(item_csv_table, report);
                 }
             }
 
+            if (heroes_content != null)
+            {
+                CsvTable hero_csv_table = CsvReader.Read("Hero.csv", heroes_content, report);
+                if (hero_csv_table != null)
+                {
+                    game_content_data._heroDataTable = HeroReader.Read(hero_csv_table, game_content_data._locationDataTable, report);
+                }
+            }
 
+            if (inventory_content != null)
+            {
+                CsvTable inventory_csv_table = CsvReader.Read("Inventory.csv", inventory_content, report);
+
+                if (inventory_csv_table != null)
+                {
+                    game_content_data._inventoryDataTable = InventoryReader.Read(inventory_csv_table, game_content_data._shopDataTable, game_content_data._heroDataTable, game_content_data._itemDataTable, report);
+                }
+            }
 
             if (report.GetErrorCount() > 0)
             {
@@ -92,7 +110,7 @@ namespace GameConsole.Presentation
             }
             else
             {
-                _gameManager = new GameManager(_eventManager, new WorldBuilder(location_data_table,shop_data_table,item_data_table));
+                _gameManager = new GameManager(_eventManager, game_content_data);
 
                 _screenRendererTable.Add(typeof(MainMenuState), new MainMenuRenderer());
                 _screenRendererTable.Add(typeof(ExploringState), new ExploringRenderer());
@@ -112,7 +130,7 @@ namespace GameConsole.Presentation
                     {
                         FixedUpdate(FIXED_FRAME_TIME);
 
-                        _eventManager.ProcessDelayEvents();
+                        _eventManager.ProcessDelayedEvents();
 
                         lag -= FIXED_FRAME_TIME;
                     }
@@ -127,7 +145,7 @@ namespace GameConsole.Presentation
                 _eventManager.TriggerEvent(new LogMessageGameEvent("Goodbye !"));
             }
 
-            
+
         }
         private static string GetFileContent(string file_name, ContentReport report)
         {

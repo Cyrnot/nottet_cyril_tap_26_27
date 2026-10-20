@@ -10,17 +10,13 @@ namespace GameLibrary.Data
     {
         public string _id;
         public string _name;
-        public string _shopId;
         public int _price;
-        public int _quantity;
 
-        public ItemData(string id, string name, string shopId, int price, int quantity)
+        public ItemData(string id, string name, int price)
         {
             _id = id;
             _name = name;
-            _shopId = shopId;
             _price = price;
-            _quantity = quantity;
         }
     }
 }

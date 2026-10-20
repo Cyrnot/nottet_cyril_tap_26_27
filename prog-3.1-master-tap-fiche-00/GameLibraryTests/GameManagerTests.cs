@@ -16,8 +16,9 @@ namespace GameLibraryTests
         public void GetSelectedDestinationIndex_ReturnMinusOneAfterConstruction()
         {
             EventManager event_manager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(new List<LocationData>() { new LocationData("W", "World", "", 0) }, null, null);
-            GameManager game_manager = new GameManager(event_manager, builder);
+            GameContentData game_content_data = new GameContentData();
+            game_content_data._locationDataTable = new List<LocationData>() { new LocationData("W", "World", "", 0) };
+            GameManager game_manager = new GameManager(event_manager, game_content_data);
 
             Assert.That(game_manager.GetSelectedDestinationIndex(), Is.EqualTo(-1));
         }
@@ -26,7 +27,9 @@ namespace GameLibraryTests
         public void GetSelectedDestinationIndex_ReturnMinusOneAfterConfirmCommandInMainMenu()
         {
             EventManager event_manager = new EventManager();
-            GameManager game_manager = new GameManager(event_manager, new WorldBuilder(new List<LocationData>(), new List<ShopData>(), null));
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>() };
+            game_content_data._locationDataTable = new List<LocationData>() { new LocationData("W", "World", "", 0) };
+            GameManager game_manager = new GameManager(event_manager, game_content_data);
 
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
 
@@ -37,8 +40,8 @@ namespace GameLibraryTests
         public void GetSelectedDestinationIndex_KeepMinusOneAfterNavigateDownCommandInMainMenu()
         {
             EventManager event_manager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(new List<LocationData>() { new LocationData("W", "World", "", 0) }, null, null);
-            GameManager game_manager = new GameManager(event_manager, builder);
+            GameContentData game_content_data = new GameContentData();
+            GameManager game_manager = new GameManager(event_manager, game_content_data);
 
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));
 
@@ -48,14 +51,12 @@ namespace GameLibraryTests
         [Test]
         public void GetCurrentLocation_ConfirmEnterExploring()
         {
-            List<LocationData> location_data_table = new List<LocationData>();
-            List<ShopData> shop_data_table = new List<ShopData>();
             EventManager event_manager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table, shop_data_table, null);
-            GameManager game_manager = new GameManager(event_manager, builder);
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>() };
+            GameManager game_manager = new GameManager(event_manager, game_content_data);
 
-            location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
-            location_data_table.Add(new LocationData("W", "World", "", 0));
+            game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
+            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
 
             Assert.That(game_manager.GetCurrentLocation(), Is.Not.Null);
@@ -64,14 +65,12 @@ namespace GameLibraryTests
         [Test]
         public void GetSelectedDestinationIndex_CancelResetsIndex()
         {
-            List<LocationData> location_data_table = new List<LocationData>();
-            List<ShopData> shop_data_table = new List<ShopData>();
             EventManager event_manager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table, shop_data_table, null);
-            GameManager game_manager = new GameManager(event_manager, builder);
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>() };
+            GameManager game_manager = new GameManager(event_manager, game_content_data);
 
-            location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
-            location_data_table.Add(new LocationData("W", "World", "", 0));
+            game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
+            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CANCEL));
@@ -82,14 +81,12 @@ namespace GameLibraryTests
         [Test]
         public void GetCurrentLocation_ConfirmMovesToChildLocation()
         {
-            List<LocationData> location_data_table = new List<LocationData>();
-            List<ShopData> shop_data_table = new List<ShopData>();
             EventManager event_manager = new EventManager();
-            WorldBuilder builder = new WorldBuilder(location_data_table, shop_data_table, null);
-            GameManager game_manager = new GameManager(event_manager, builder);
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>() };
+            GameManager game_manager = new GameManager(event_manager, game_content_data);
 
-            location_data_table.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
-            location_data_table.Add(new LocationData("W", "World", "", 0));
+            game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
+            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
             LocationComponent old_Location = game_manager.GetCurrentLocation();
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));

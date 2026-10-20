@@ -3,7 +3,7 @@ using GameLibrary.Data;
 using GameLibrary.Csv;
 using System.Collections.Generic;
 
-namespace GameLibraryTests
+namespace GameLibraryTests.Data
 {
     public class LocationReaderTests
     {
