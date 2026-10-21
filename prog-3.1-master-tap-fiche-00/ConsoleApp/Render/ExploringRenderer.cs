@@ -17,17 +17,32 @@ namespace GameConsole.Render
             ExploringState exploring_state = state as ExploringState;
 
             string text = "";
+            int line = 0;
 
             if (exploring_state.GetIsReplaying())
             {
                 text = $" - REPLAY:{exploring_state.GetReplaySpeed()}x";
             }
 
-            render_manager.Draw(0, 0, $"Game in progress...{text}\n", ConsoleColor.Magenta, ConsoleColor.Black);
+            render_manager.Draw(0, line++, $"Game in progress...{text}\n", ConsoleColor.Magenta, ConsoleColor.Black);
 
             LocationComponent current_location = exploring_state.GetCurrentLocation();
 
-            render_manager.Draw(0, 1, $"Exploring {current_location.GetName()}\n", ConsoleColor.Cyan, ConsoleColor.Black);
+            GameObject hero = exploring_state.GetHeroObject();
+            HeroComponent hero_component = hero.GetComponent<HeroComponent>();
+            HealthComponent health_component = hero.GetComponent<HealthComponent>();
+            WalletComponent wallet_component = hero.GetComponent<WalletComponent>();
+
+            render_manager.Draw(0, line++, $"{hero_component.GetName()} - {health_component.GetHealth()} HP - Money: {wallet_component.GetMoney()}", ConsoleColor.Red, ConsoleColor.Black);
+
+            InventoryComponent inventory_component = hero.GetComponent<InventoryComponent>();
+
+            for (int item_index = 0; item_index < inventory_component.GetEntryCount(); item_index++)
+            {
+                render_manager.Draw(0, line++, $"{inventory_component.GetEntryAtIndex(item_index).GetItem()._name}", ConsoleColor.Red, ConsoleColor.Black);
+            }
+
+            render_manager.Draw(0, line++, $"Exploring {current_location.GetName()}\n", ConsoleColor.Cyan, ConsoleColor.Black);
 
             for (int location_index = 0; location_index < current_location.GetChildLocationCount(); location_index++)
             {
@@ -35,11 +50,11 @@ namespace GameConsole.Render
 
                 if (location_index == exploring_state.GetSelectedDestinationIndex())
                 {
-                    render_manager.Draw(0, 2 + location_index, $"{location_index + 1}. {current_connection.GetDestinationLocation().GetName()}: Duration: {current_connection.GetTimeToReachDestination()}", ConsoleColor.Black, ConsoleColor.Green);
+                    render_manager.Draw(0, line++ + location_index, $"{location_index + 1}. {current_connection.GetDestinationLocation().GetName()}: Duration: {current_connection.GetTimeToReachDestination()}", ConsoleColor.Black, ConsoleColor.Green);
                 }
                 else
                 {
-                    render_manager.Draw(0, 2 + location_index, $"{location_index + 1}. {current_connection.GetDestinationLocation().GetName()}: Duration: {current_connection.GetTimeToReachDestination()}", ConsoleColor.Green, ConsoleColor.Black);
+                    render_manager.Draw(0, line++ + location_index, $"{location_index + 1}. {current_connection.GetDestinationLocation().GetName()}: Duration: {current_connection.GetTimeToReachDestination()}", ConsoleColor.Green, ConsoleColor.Black);
                 }
             }
         }

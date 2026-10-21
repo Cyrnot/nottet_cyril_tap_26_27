@@ -15,6 +15,8 @@ public class GameManager : IFixedStepClock
     private readonly EventManager _eventManager;
     private readonly StateMachine _gameFlowStateStateMachine;
     private readonly WorldBuilder _worldBuilder;
+    private readonly HeroBuilder _heroBuilder;
+
     private LocationComponent _currentLocation;
 
     private ReplayRecorder _replayRecorder;
@@ -30,10 +32,13 @@ public class GameManager : IFixedStepClock
     private int _fixedStepIndex = 0;
     private int _replaySpeed;
 
+    private GameObject _heroObject;
+
     public GameManager(EventManager event_manager, GameContentData game_content_data)
     {
         _eventManager = event_manager;
         _worldBuilder = new WorldBuilder(game_content_data);
+        _heroBuilder = new HeroBuilder(game_content_data);
 
         _gameFlowStateStateMachine = new StateMachine(_eventManager);
         _gameFlowStateStateMachine.SetInitialState(new MainMenuState(_gameFlowStateStateMachine, this, _eventManager));
@@ -60,7 +65,9 @@ public class GameManager : IFixedStepClock
         _replayRecorder = new ReplayRecorder(seed, _eventManager, this);
         _replayPlayer = null;
         _fixedStepIndex = 0;
+
         LocationComponent location = _worldBuilder.Build(_eventManager);
+        _heroObject = _heroBuilder.Build(_eventManager);
 
         _currentLocation = location;   
     }
@@ -241,5 +248,20 @@ public class GameManager : IFixedStepClock
     public bool GetIsReplaying()
     {
         return _replayPlayer != null && !_replayPlayer.GetIsFinished(_fixedStepIndex);
+    }
+
+    public InventoryComponent GetHeroInventory()
+    {
+        return _heroObject.GetComponent<InventoryComponent>();
+    }
+
+    public WalletComponent GetHeroWallet()
+    {
+        return _heroObject.GetComponent<WalletComponent>();
+    }
+
+    public GameObject GetHeroObject()
+    {
+        return _heroObject;
     }
 }

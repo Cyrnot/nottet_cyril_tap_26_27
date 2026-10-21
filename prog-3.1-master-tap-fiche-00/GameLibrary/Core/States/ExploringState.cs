@@ -136,5 +136,10 @@ namespace GameLibrary.Core.States
         {
             return _gameManager.GetReplaySpeed();
         }
+
+        public GameObject GetHeroObject()
+        {
+            return _gameManager.GetHeroObject();
+        }
     }
 }

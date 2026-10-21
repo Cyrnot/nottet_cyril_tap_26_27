@@ -5,17 +5,17 @@ namespace GameLibrary.Core
     public class GameObject
     {
         private readonly List<Component> _componentTable = new List<Component>();
-        private readonly string _name;
+        private readonly string _id;
         private bool _isActive = false;
 
-        public GameObject(string name)
+        public GameObject(string id)
         {
-            _name = name;
+            _id = id;
         }
 
         public string GetName()
         {
-            return _name;
+            return _id;
         }
 
         public bool GetIsActive()
