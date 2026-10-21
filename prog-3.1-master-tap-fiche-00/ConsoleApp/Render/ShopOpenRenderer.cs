@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace GameConsole.Render
 {
@@ -16,7 +17,14 @@ namespace GameConsole.Render
             ShopOpenState shop_open_state = state as ShopOpenState;
             InventoryComponent inventory_component = shop_open_state.GetInventoryComponent();
 
-            render_manager.Draw(0, 0, $"{shop_open_state.GetShopComponent().GetGameObject().GetComponent<LocationComponent>().GetName()} close at {shop_open_state.GetShopComponent().GetShopData()._closingHour}:00", ConsoleColor.Yellow, ConsoleColor.Black);
+            string text = "";
+
+            if (shop_open_state.GetIsReplaying())
+            {
+                text = $" - REPLAY:{shop_open_state.GetReplaySpeed()}x";
+            }
+
+            render_manager.Draw(0, 0, $"{shop_open_state.GetShopComponent().GetGameObject().GetComponent<LocationComponent>().GetName()} close at {shop_open_state.GetShopComponent().GetShopData()._closingHour}:00{text}", ConsoleColor.Yellow, ConsoleColor.Black);
             render_manager.Draw(0, 1, $"{shop_open_state.GetShopComponent().GetHour()}:{shop_open_state.GetShopComponent().GetMinute()}", ConsoleColor.White, ConsoleColor.Black);
             render_manager.Draw(0, 2, $"Esc to return", ConsoleColor.Cyan, ConsoleColor.Black);
 

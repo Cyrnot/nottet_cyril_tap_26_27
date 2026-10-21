@@ -125,7 +125,7 @@ namespace GameLibraryTests.State
             InventoryComponent inventory_component = new InventoryComponent(shop_object);
             ShopOpenState open_state = new ShopOpenState(state_machine, game_manager, event_manager, shops_component, inventory_component);
             state_machine.SetInitialState(open_state);
-            event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CANCEL));
+            event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.QUIT));
 
             Assert.That(state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ExploringState)));
         }

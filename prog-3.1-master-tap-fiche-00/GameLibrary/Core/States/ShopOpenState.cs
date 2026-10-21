@@ -40,9 +40,6 @@ namespace GameLibrary.Core.States
 
             if (game_action_game_event._gameActionType == GameActionType.NAVIGATE_UP)
             {
-                int selected_child_location_index = _gameManager.GetSelectedDestinationIndex();
-                int current_location_child_count = _gameManager.GetCurrentLocation().GetChildLocationCount();
-
                 _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
                 int entry_count = _inventoryComponent.GetEntryCount();
                 if (entry_count > 0)
@@ -73,7 +70,13 @@ namespace GameLibrary.Core.States
                     }
                 }
             }
-            else if (game_action_game_event._gameActionType == GameActionType.QUIT || game_action_game_event._gameActionType == GameActionType.CANCEL)
+            else if (game_action_game_event._gameActionType == GameActionType.CANCEL)
+            {
+                _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
+
+                _selectedItemIndex = -1;
+            }
+            else if (game_action_game_event._gameActionType == GameActionType.QUIT)
             {
                 _eventManager.TriggerEvent(new LogMessageGameEvent($"{game_action_game_event._gameActionType}"));
 
@@ -121,6 +124,16 @@ namespace GameLibrary.Core.States
         public InventoryComponent GetInventoryComponent()
         {
             return _inventoryComponent;
+        }
+
+        public bool GetIsReplaying()
+        {
+            return _gameManager.GetIsReplaying();
+        }
+
+        public int GetReplaySpeed()
+        {
+            return _gameManager.GetReplaySpeed();
         }
     }
 }

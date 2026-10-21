@@ -63,5 +63,15 @@ namespace GameLibrary.Core.States
         {
             return _shopComponent;
         }
+
+        public bool GetIsReplaying()
+        {
+            return _gameManager.GetIsReplaying();
+        }
+
+        public int GetReplaySpeed()
+        {
+            return _gameManager.GetReplaySpeed();
+        }
     }
 }

@@ -12,8 +12,19 @@ namespace GameConsole.Render
     {
         public void Render(IState state, ConsoleRenderManager render_manager)
         {
-            render_manager.Draw(0, 0, "Enter to start", ConsoleColor.Green, ConsoleColor.Black);
-            render_manager.Draw(0, 1, "Esc to quit", ConsoleColor.Green, ConsoleColor.Black);
+            MainMenuState main_menu_state = state as MainMenuState;
+
+            for (int menu_index = 0; menu_index < main_menu_state.GetMenuItemTable().Count; menu_index++)
+            {
+                if (main_menu_state.GetSelectedItemIndex() != menu_index)
+                {
+                    render_manager.Draw(0, menu_index, $"{main_menu_state.GetMenuItemTable()[menu_index].GetText()}", ConsoleColor.Green, ConsoleColor.Black);
+                }
+                else
+                {
+                    render_manager.Draw(0, menu_index, $"{main_menu_state.GetMenuItemTable()[menu_index].GetText()}", ConsoleColor.Black, ConsoleColor.Green);
+                }
+            }
         }
     }
 }

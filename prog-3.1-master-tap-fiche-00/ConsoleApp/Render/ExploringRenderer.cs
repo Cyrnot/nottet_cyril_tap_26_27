@@ -16,7 +16,14 @@ namespace GameConsole.Render
         {
             ExploringState exploring_state = state as ExploringState;
 
-            render_manager.Draw(0, 0, "Game in progress...\n", ConsoleColor.Magenta, ConsoleColor.Black);
+            string text = "";
+
+            if (exploring_state.GetIsReplaying())
+            {
+                text = $" - REPLAY:{exploring_state.GetReplaySpeed()}x";
+            }
+
+            render_manager.Draw(0, 0, $"Game in progress...{text}\n", ConsoleColor.Magenta, ConsoleColor.Black);
 
             LocationComponent current_location = exploring_state.GetCurrentLocation();
 

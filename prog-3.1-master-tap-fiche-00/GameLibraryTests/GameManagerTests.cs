@@ -57,6 +57,7 @@ namespace GameLibraryTests
 
             game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
             game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
+            event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));
             event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
 
             Assert.That(game_manager.GetCurrentLocation(), Is.Not.Null);

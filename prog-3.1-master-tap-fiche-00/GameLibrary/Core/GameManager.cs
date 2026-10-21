@@ -28,8 +28,7 @@ public class GameManager : IFixedStepClock
     private bool _isMenuStateActive = true;
 
     private int _fixedStepIndex = 0;
-
-
+    private int _replaySpeed;
 
     public GameManager(EventManager event_manager, GameContentData game_content_data)
     {
@@ -166,16 +165,6 @@ public class GameManager : IFixedStepClock
         _selectedChildLocationIndex = selected_child_location_index;
     }
 
-    public bool GetIsMenuStateActive()
-    {
-        return _isMenuStateActive;
-    }
-
-    public void SetIsMenuStateActive(bool is_menu_state_active)
-    {
-        _isMenuStateActive = is_menu_state_active;
-    }
-
     public IState GetGameFlowStateMachine()
     {
         return _gameFlowStateStateMachine.GetCurrentState();
@@ -189,7 +178,7 @@ public class GameManager : IFixedStepClock
 
         if (content_report.GetErrorCount() > 0)
         {
-            file_name += " Damaged ";
+            file_name += " (Damaged) ";
 
             for (int error_index = 0; error_index < content_report.GetErrorCount(); error_index++)
             {
@@ -198,6 +187,11 @@ public class GameManager : IFixedStepClock
         }
 
         _saveTable.Add(file_name, save);
+
+        if (_gameFlowStateStateMachine.GetCurrentState() is MainMenuState main_menu_state)
+        {
+            main_menu_state.AddSaveEntry(file_name);
+        }
     }
 
     public string GetSaveText()
@@ -212,6 +206,11 @@ public class GameManager : IFixedStepClock
         return save_text;
     }
 
+    public EventManager GetEventManager()
+    {
+        return _eventManager;
+    }
+
     public int GetFixedStepIndex()
     {
         return _fixedStepIndex;
@@ -222,5 +221,25 @@ public class GameManager : IFixedStepClock
         StartNewGame(replay_data._seed);
 
         _replayPlayer = new ReplayPlayer(replay_data, _eventManager, this);
+    }
+
+    public Dictionary<string,string> GetSaveTable()
+    {
+        return _saveTable;
+    }
+
+    public void SetReplaySpeed(int replay_speed)
+    {
+        _replaySpeed = replay_speed;
+    }
+
+    public int GetReplaySpeed()
+    {
+        return _replaySpeed;
+    }
+
+    public bool GetIsReplaying()
+    {
+        return _replayPlayer != null && !_replayPlayer.GetIsFinished(_fixedStepIndex);
     }
 }

@@ -137,6 +137,11 @@ namespace GameConsole.Presentation
                         float loop_start_time = GetCurrentTime();
                         float elapsed_time = loop_start_time - last_time;
 
+                        if (_gameManager.GetIsReplaying())
+                        {
+                            elapsed_time *= _gameManager.GetReplaySpeed();
+                        }
+
                         lag += elapsed_time;
 
                         ProcessInput();
@@ -195,27 +200,29 @@ namespace GameConsole.Presentation
             {
                 ConsoleKeyInfo player_command = Console.ReadKey(true);
 
-                if (player_command.Key == ConsoleKey.UpArrow)
+                if (!_gameManager.GetIsReplaying())
                 {
-                    _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_UP));
+                    if (player_command.Key == ConsoleKey.UpArrow)
+                    {
+                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_UP));
+                    }
+                    else if (player_command.Key == ConsoleKey.DownArrow)
+                    {
+                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));
+                    }
+                    else if (player_command.Key == ConsoleKey.Enter)
+                    {
+                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
+                    }
+                    else if (player_command.Key == ConsoleKey.Backspace)
+                    {
+                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.CANCEL));
+                    }
+                    else if (player_command.Key == ConsoleKey.Escape)
+                    {
+                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.QUIT));
+                    }
                 }
-                else if (player_command.Key == ConsoleKey.DownArrow)
-                {
-                    _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));
-                }
-                else if (player_command.Key == ConsoleKey.Enter)
-                {
-                    _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
-                }
-                else if (player_command.Key == ConsoleKey.Backspace)
-                {
-                    _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.CANCEL));
-                }
-                else if (player_command.Key == ConsoleKey.Escape)
-                {
-                    _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.QUIT));
-                }
-
             }
         }
 
