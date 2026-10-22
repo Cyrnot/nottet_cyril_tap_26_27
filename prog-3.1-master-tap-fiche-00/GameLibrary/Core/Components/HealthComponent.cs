@@ -30,5 +30,10 @@ namespace GameLibrary.Core.Components
             }
             _health = Math.Max(_health - damage_count, 0);
         }
+
+        public int GetMaxHealth()
+        {
+            return _maxHealth;
+        }
     }
 }

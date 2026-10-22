@@ -10,124 +10,96 @@ namespace GameLibraryTests.State
 {
     public class ShopStateTests
     {
+        private EventManager _event_manager;
+        private StateMachine _state_machine;
+        private ShopComponent _shop_component;
+        private InventoryComponent _inventory_component;
+        private ShopOpenState _open_state;
+
+        private void InitializeShop(bool include_item = false)
+        {
+            _event_manager = new EventManager();
+            _state_machine = new StateMachine(_event_manager);
+
+            GameContentData game_content_data = new GameContentData
+            {
+                _locationDataTable = new List<LocationData> {new LocationData("W", "World", "", 0),new LocationData("GS_DT", "Gun Shop", "W", 10)},
+                _shopDataTable = new List<ShopData>{new ShopData("GS_DT", 8, 9)},
+                _inventoryDataTable = new List<InventoryEntryData>(),
+                _itemDataTable = new Dictionary<string, ItemData>(),
+                _heroDataTable = new List<HeroData>()
+            };
+
+            GameManager game_manager = new GameManager(_event_manager, game_content_data);
+            game_manager.StartNewGame(1234567);
+
+            GameObject shop_object = game_manager.GetCurrentLocation().GetChildLocationAtIndex(0).GetDestinationLocation().GetGameObject();
+
+            _shop_component = shop_object.GetComponent<ShopComponent>();
+            _inventory_component = new InventoryComponent(shop_object);
+
+            if (include_item)
+            {
+                _inventory_component.Add(new ItemData("CP_GH", "Colt Peacemaker", 50), 1);
+            }
+
+            _open_state = new ShopOpenState(_state_machine,game_manager,_event_manager,_shop_component,_inventory_component);
+
+            _state_machine.SetInitialState(_open_state);
+        }
 
         [Test]
         public void FixedUpdate_CommingInShopOpenAndClosed()
         {
-            EventManager event_manager = new EventManager();
-            StateMachine state_machine = new StateMachine(event_manager);
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _inventoryDataTable = new List<InventoryEntryData>(), _itemDataTable = new Dictionary<string, ItemData>() };
-            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
-            game_content_data._locationDataTable.Add(new LocationData("GS_DT", "Gun Shop", "W", 10));
-            game_content_data._shopDataTable.Add(new ShopData("GS_DT", 8, 9));
-            GameManager game_manager = new GameManager(event_manager, game_content_data);
+            InitializeShop(include_item: true);
 
-            game_manager.StartNewGame(1234567);
-            GameObject shop_object = game_manager.GetCurrentLocation().GetChildLocationAtIndex(0).GetDestinationLocation().GetGameObject();
-            ShopComponent shops_component = shop_object.GetComponent<ShopComponent>();
-            InventoryComponent inventory_component = new InventoryComponent(shop_object);
-            inventory_component.Add(new ItemData("CP_GH", "Colt Peacemaker", 50), 1);
-            ShopOpenState open_state = new ShopOpenState(state_machine, game_manager, event_manager, shops_component, inventory_component);
-            state_machine.SetInitialState(open_state);
-            state_machine.FixedUpdate(0f);
+            _state_machine.FixedUpdate(0f);
+            Assert.That(_state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ShopOpenState)));
 
-            Assert.That(state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ShopOpenState)));
+            _shop_component.FixedUpdate(6.0f);
+            _state_machine.FixedUpdate(0f);
 
-            shops_component.FixedUpdate(6.0f);
-            state_machine.FixedUpdate(0.0f);
-
-            Assert.That(state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ShopClosedState)));
+            Assert.That(_state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ShopClosedState)));
         }
 
         [Test]
         public void FixedUpdate_ShopClosedDuringVisit()
         {
-            EventManager event_manager = new EventManager();
-            StateMachine state_machine = new StateMachine(event_manager);
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _inventoryDataTable = new List<InventoryEntryData>(), _itemDataTable = new Dictionary<string, ItemData>() };
-            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
-            game_content_data._locationDataTable.Add(new LocationData("GS_DT", "Gun Shop", "W", 10));
-            game_content_data._shopDataTable.Add(new ShopData("GS_DT", 8, 9));
-            GameManager game_manager = new GameManager(event_manager, game_content_data);
+            InitializeShop(include_item: true);
 
-            game_manager.StartNewGame(1234567);
-            GameObject shop_object = game_manager.GetCurrentLocation().GetChildLocationAtIndex(0).GetDestinationLocation().GetGameObject();
-            ShopComponent shops_component = shop_object.GetComponent<ShopComponent>();
-            InventoryComponent inventory_component = new InventoryComponent(shop_object);
-            inventory_component.Add(new ItemData("CP_GH", "Colt Peacemaker", 50), 1);
-            ShopOpenState open_state = new ShopOpenState(state_machine, game_manager, event_manager, shops_component, inventory_component);
-            state_machine.SetInitialState(open_state);
-            shops_component.FixedUpdate(6.0f);
-            state_machine.FixedUpdate(0.0f);
+            _shop_component.FixedUpdate(6.0f);
+            _state_machine.FixedUpdate(0f);
 
-            Assert.That(state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ShopClosedState)));
+            Assert.That(_state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ShopClosedState)));
         }
 
         [Test]
         public void selectedItemIndex_ReturnMinusOneAfterConstruction()
         {
-            EventManager event_manager = new EventManager();
-            StateMachine state_machine = new StateMachine(event_manager);
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _inventoryDataTable = new List<InventoryEntryData>(), _itemDataTable = new Dictionary<string, ItemData>() };
-            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
-            game_content_data._locationDataTable.Add(new LocationData("GS_DT", "Gun Shop", "W", 10));
-            game_content_data._shopDataTable.Add(new ShopData("GS_DT", 8, 9));
-            GameManager game_manager = new GameManager(event_manager, game_content_data);
+            InitializeShop();
 
-            game_manager.StartNewGame(1234567);
-            GameObject shop_object = game_manager.GetCurrentLocation().GetChildLocationAtIndex(0).GetDestinationLocation().GetGameObject();
-            ShopComponent shops_component = shop_object.GetComponent<ShopComponent>();
-            InventoryComponent inventory_component = new InventoryComponent(shop_object);
-            ShopOpenState open_state = new ShopOpenState(state_machine, game_manager, event_manager, shops_component, inventory_component);
-            state_machine.SetInitialState(open_state);
-
-            Assert.That(open_state.GetSelectedItemIndex(), Is.EqualTo(-1));
+            Assert.That(_open_state.GetSelectedItemIndex(), Is.EqualTo(-1));
         }
 
         [Test]
         public void OnGameActionGameEvent_DecreaseQuantityOutOfStock()
         {
-            EventManager event_manager = new EventManager();
-            StateMachine state_machine = new StateMachine(event_manager);
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _inventoryDataTable = new List<InventoryEntryData>(), _itemDataTable = new Dictionary<string, ItemData>() };
-            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
-            game_content_data._locationDataTable.Add(new LocationData("GS_DT", "Gun Shop", "W", 10));
-            game_content_data._shopDataTable.Add(new ShopData("GS_DT", 8, 9));
-            GameManager game_manager = new GameManager(event_manager, game_content_data);
+            InitializeShop(include_item: true);
 
-            game_manager.StartNewGame(1234567);
-            GameObject shop_object = game_manager.GetCurrentLocation().GetChildLocationAtIndex(0).GetDestinationLocation().GetGameObject();
-            ShopComponent shops_component = shop_object.GetComponent<ShopComponent>();
-            InventoryComponent inventory_component = new InventoryComponent(shop_object);
-            inventory_component.Add(new ItemData("CP_GH", "Colt Peacemaker", 50), 1);
-            ShopOpenState open_state = new ShopOpenState(state_machine, game_manager, event_manager, shops_component, inventory_component);
-            state_machine.SetInitialState(open_state);
-            event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));
-            event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
+            _event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));
+            _event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
 
-            Assert.That(inventory_component.GetEntryAtIndex(0).GetQuantity(), Is.EqualTo(0));
+            Assert.That(_inventory_component.GetEntryAtIndex(0).GetQuantity(), Is.EqualTo(0));
         }
 
         [Test]
         public void Exit_ChangeStateToExploringState()
         {
-            EventManager event_manager = new EventManager();
-            StateMachine state_machine = new StateMachine(event_manager);
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _inventoryDataTable = new List<InventoryEntryData>(), _itemDataTable = new Dictionary<string, ItemData>() };
-            game_content_data._locationDataTable.Add(new LocationData("W", "World", "", 0));
-            game_content_data._locationDataTable.Add(new LocationData("GS_DT", "Gun Shop", "W", 10));
-            game_content_data._shopDataTable.Add(new ShopData("GS_DT", 8, 9));
-            GameManager game_manager = new GameManager(event_manager, game_content_data);
+            InitializeShop();
 
-            game_manager.StartNewGame(1234567);
-            GameObject shop_object = game_manager.GetCurrentLocation().GetChildLocationAtIndex(0).GetDestinationLocation().GetGameObject();
-            ShopComponent shops_component = shop_object.GetComponent<ShopComponent>();
-            InventoryComponent inventory_component = new InventoryComponent(shop_object);
-            ShopOpenState open_state = new ShopOpenState(state_machine, game_manager, event_manager, shops_component, inventory_component);
-            state_machine.SetInitialState(open_state);
-            event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.QUIT));
+            _event_manager.TriggerEvent(new GameActionGameEvent(GameActionType.QUIT));
 
-            Assert.That(state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ExploringState)));
+            Assert.That(_state_machine.GetCurrentState().GetType(), Is.EqualTo(typeof(ExploringState)));
         }
     }
 

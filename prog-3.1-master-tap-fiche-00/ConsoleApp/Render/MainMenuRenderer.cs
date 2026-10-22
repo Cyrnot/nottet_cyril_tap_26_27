@@ -1,16 +1,20 @@
 ﻿using GameConsole.Presentation;
+using GameHost.Render;
 using GameLibrary.Core.States;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameConsole.Render
 {
     public class MainMenuRenderer : IScreenRenderer
     {
-        public void Render(IState state, ConsoleRenderManager render_manager)
+        private readonly ConsoleRenderManager _renderManager;
+
+        public MainMenuRenderer(ConsoleRenderManager render_manager)
+        {
+            _renderManager = render_manager;
+        }
+
+        public void Render(IState state)
         {
             MainMenuState main_menu_state = state as MainMenuState;
 
@@ -18,13 +22,15 @@ namespace GameConsole.Render
             {
                 if (main_menu_state.GetSelectedItemIndex() != menu_index)
                 {
-                    render_manager.Draw(0, menu_index, $"{main_menu_state.GetMenuItemTable()[menu_index].GetText()}", ConsoleColor.Green, ConsoleColor.Black);
+                    _renderManager.Draw(0, menu_index, $"{main_menu_state.GetMenuItemTable()[menu_index].GetText()}", ConsoleColor.Green, ConsoleColor.Black);
                 }
                 else
                 {
-                    render_manager.Draw(0, menu_index, $"{main_menu_state.GetMenuItemTable()[menu_index].GetText()}", ConsoleColor.Black, ConsoleColor.Green);
+                    _renderManager.Draw(0, menu_index, $"{main_menu_state.GetMenuItemTable()[menu_index].GetText()}", ConsoleColor.Black, ConsoleColor.Green);
                 }
             }
+
+            _renderManager.Render();
         }
     }
 }

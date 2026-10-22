@@ -12,6 +12,11 @@ namespace GameLibrary.Data
     {
         public static List<ShopData> Read(CsvTable csv_table, List<LocationData> location_data_table, ContentReport report)
         {
+            if (location_data_table == null)
+            {
+                throw new ArgumentNullException(nameof(location_data_table), "Location data must be loaded before shops can be read.");
+            }
+
             List<ShopData> shop_data_table = new List<ShopData>();
             HashSet<string> shop_reference_table = new HashSet<string>();
 

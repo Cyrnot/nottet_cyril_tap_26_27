@@ -9,6 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\..\..\Downloads\spectre.console-0.53.1\spectre.console-0.53.1\src\Spectre.Console\Spectre.Console.csproj" />
+      <ProjectReference Include="..\GameHost\GameHost.csproj" />
       <ProjectReference Include="..\GameLibrary\GameLibrary.csproj" />
     </ItemGroup>
 

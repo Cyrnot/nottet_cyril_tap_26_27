@@ -30,7 +30,7 @@ public class GameManager : IFixedStepClock
     private bool _isMenuStateActive = true;
 
     private int _fixedStepIndex = 0;
-    private int _replaySpeed;
+    private int _replaySpeed = 20;
 
     private GameObject _heroObject;
 

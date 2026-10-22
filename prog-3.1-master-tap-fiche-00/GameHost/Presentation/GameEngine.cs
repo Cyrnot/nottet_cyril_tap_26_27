@@ -1,17 +1,13 @@
-﻿using GameConsole.Render;
-using GameConsole.Save;
+﻿using GameHost.Render;
+using GameHost.Save;
 using GameLibrary.Core;
-using GameLibrary.Core.Components;
 using GameLibrary.Core.Events;
 using GameLibrary.Core.States;
 using GameLibrary.Csv;
 using GameLibrary.Data;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
-namespace GameConsole.Presentation
+namespace GameHost.Presentation
 {
     public class GameEngine
     {
@@ -19,26 +15,27 @@ namespace GameConsole.Presentation
 
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        private readonly ConsoleRenderManager _renderManager = new ConsoleRenderManager();
 
         private EventManager _eventManager = new EventManager();
         private GameManager _gameManager;
         private WorldBuilder _worldBuilder;
         private LogManager _logManager;
 
-        private readonly Dictionary<Type, IScreenRenderer> _screenRendererTable = new Dictionary<Type, IScreenRenderer>();
-
-        private static readonly string DIRECTORY_PATH = "../../../";
-        private static readonly string SAVES_DIRECTORY_PATH = $"{DIRECTORY_PATH}Saves/";
-        private static readonly string DATA_DIRECTORY_PATH = $"{DIRECTORY_PATH}Data/";
-        private static readonly string LOG_FILE_PATH = $"{DIRECTORY_PATH}debug.log";
+        private readonly Dictionary<Type, IScreenRenderer> _screenRendererTable;
+        private readonly string _dataDirectoryPath;
+        private readonly string _savesDirectoryPath;
 
         private SaveFileWriter _saveFileWriter;
         private SaveFileLoader _saveFileLoader;
 
-        public GameEngine()
+        public GameEngine(Dictionary<Type, IScreenRenderer> renderer_table, string game_data_path)
         {
-            _logManager = new LogManager(new LogFileWriter(LOG_FILE_PATH), _eventManager);
+            _screenRendererTable = renderer_table;
+            _dataDirectoryPath = game_data_path + "Data/";
+            _savesDirectoryPath = game_data_path + "Saves/";
+
+            string log_file_path = game_data_path + "debug.log";
+            _logManager = new LogManager(new LogFileWriter(log_file_path),_eventManager);
         }
 
         public void Run()
@@ -76,7 +73,14 @@ namespace GameConsole.Presentation
 
                 if (shop_csv_table != null)
                 {
-                    game_content_data._shopDataTable = ShopReader.Read(shop_csv_table, game_content_data._locationDataTable, report);
+                    if (game_content_data._locationDataTable == null)
+                    {
+                        report.AddError("Shop.csv", 0, "Cannot validate shops because locations.csv was not loaded.");
+                    }
+                    else
+                    {
+                        game_content_data._shopDataTable = ShopReader.Read(shop_csv_table, game_content_data._locationDataTable, report);
+                    }
                 }
             }
 
@@ -121,17 +125,16 @@ namespace GameConsole.Presentation
             {
                 _gameManager = new GameManager(_eventManager, game_content_data);
 
-                _saveFileWriter = new SaveFileWriter(SAVES_DIRECTORY_PATH, _gameManager, _eventManager);
-                _saveFileLoader = new SaveFileLoader(SAVES_DIRECTORY_PATH, _gameManager, _eventManager);
+                _saveFileWriter = new SaveFileWriter(_savesDirectoryPath, _gameManager, _eventManager);
+                _saveFileLoader = new SaveFileLoader(_savesDirectoryPath, _gameManager, _eventManager);
                 _saveFileLoader.LoadAllSaves();
-
-                _screenRendererTable.Add(typeof(MainMenuState), new MainMenuRenderer());
-                _screenRendererTable.Add(typeof(ExploringState), new ExploringRenderer());
-                _screenRendererTable.Add(typeof(ShopClosedState), new ShopClosedRenderer());
-                _screenRendererTable.Add(typeof(ShopOpenState), new ShopOpenRenderer());
 
                 try
                 {
+                    bool first_render = true;
+
+                    float renderElapsedTime = 0;
+
                     while (!_gameManager.GetShouldQuit())
                     {
                         float loop_start_time = GetCurrentTime();
@@ -144,7 +147,9 @@ namespace GameConsole.Presentation
 
                         lag += elapsed_time;
 
-                        ProcessInput();
+                        renderElapsedTime += elapsed_time;
+
+                        bool action_received = ProcessInput();
 
                         while (lag >= FIXED_FRAME_TIME)
                         {
@@ -157,7 +162,12 @@ namespace GameConsole.Presentation
 
                         Update(elapsed_time);
 
-                        Render();
+                        if (first_render || action_received || renderElapsedTime >= 0.1f)
+                        {
+                            Render();
+                            first_render = false;
+                            renderElapsedTime = 0;
+                        }
 
                         last_time = loop_start_time;
                     }
@@ -172,10 +182,10 @@ namespace GameConsole.Presentation
                 }
             }
         }
-        private static string GetFileContent(string file_name, ContentReport report)
+        private string GetFileContent(string file_name, ContentReport report)
         {
             string file_content = null;
-            string file_path = $"{DATA_DIRECTORY_PATH}{file_name}";
+            string file_path = $"{_dataDirectoryPath}{file_name}";
 
             try
             {
@@ -194,36 +204,52 @@ namespace GameConsole.Presentation
         }
 
 
-        private void ProcessInput()
+        private bool ProcessInput()
         {
+            bool action_received = false;
+
             while (Console.KeyAvailable)
             {
                 ConsoleKeyInfo player_command = Console.ReadKey(true);
 
-                if (!_gameManager.GetIsReplaying())
+                GameActionType action;
+
+                if (_gameManager.GetIsReplaying())
                 {
-                    if (player_command.Key == ConsoleKey.UpArrow)
-                    {
-                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_UP));
-                    }
-                    else if (player_command.Key == ConsoleKey.DownArrow)
-                    {
-                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.NAVIGATE_DOWN));
-                    }
-                    else if (player_command.Key == ConsoleKey.Enter)
-                    {
-                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.CONFIRM));
-                    }
-                    else if (player_command.Key == ConsoleKey.Backspace)
-                    {
-                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.CANCEL));
-                    }
-                    else if (player_command.Key == ConsoleKey.Escape)
-                    {
-                        _eventManager.TriggerEvent(new GameActionGameEvent(GameActionType.QUIT));
-                    }
+                    continue;
                 }
+
+                switch (player_command.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        action = GameActionType.NAVIGATE_UP;
+                        break;
+
+                    case ConsoleKey.DownArrow:
+                        action = GameActionType.NAVIGATE_DOWN;
+                        break;
+
+                    case ConsoleKey.Enter:
+                        action = GameActionType.CONFIRM;
+                        break;
+
+                    case ConsoleKey.Backspace:
+                        action = GameActionType.CANCEL;
+                        break;
+
+                    case ConsoleKey.Escape:
+                        action = GameActionType.QUIT;
+                        break;
+
+                    default:
+                        continue;
+
+                }
+                    _eventManager.TriggerEvent(new GameActionGameEvent(action));
+                    action_received = true;
             }
+
+            return action_received;
         }
 
         private void FixedUpdate(float fixed_elapsed_time)
@@ -240,9 +266,8 @@ namespace GameConsole.Presentation
         {
             IState current_game_flow_state = _gameManager.GetGameFlowStateMachine();
 
-            _screenRendererTable[current_game_flow_state.GetType()].Render(current_game_flow_state, _renderManager);
+            _screenRendererTable[current_game_flow_state.GetType()].Render(current_game_flow_state);
 
-            _renderManager.Render();
         }
 
         private float GetCurrentTime()

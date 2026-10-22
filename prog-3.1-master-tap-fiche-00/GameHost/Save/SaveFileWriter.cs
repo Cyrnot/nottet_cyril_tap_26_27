@@ -4,7 +4,7 @@ using System.IO;
 using GameLibrary.Core;
 using GameLibrary.Core.Events;
 
-namespace GameConsole.Save
+namespace GameHost.Save
 {
     public class SaveFileWriter
     {
