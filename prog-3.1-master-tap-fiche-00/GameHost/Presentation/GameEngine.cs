@@ -55,6 +55,8 @@ namespace GameHost.Presentation
             string shops_content = GetFileContent("Shop.csv", report);
             string inventory_content = GetFileContent("Inventory.csv", report);
             string heroes_content = GetFileContent("Hero.csv", report);
+            string mine_ores_content = GetFileContent("mine_ores.csv", report);
+            string mines_content = GetFileContent("mines.csv", report);
 
 
             if (locations_content != null)
@@ -110,6 +112,24 @@ namespace GameHost.Presentation
                 if (inventory_csv_table != null)
                 {
                     game_content_data._inventoryDataTable = InventoryReader.Read(inventory_csv_table, game_content_data._shopDataTable, game_content_data._heroDataTable, game_content_data._itemDataTable, report);
+                }
+            }
+
+            if (mines_content != null)
+            {
+                CsvTable mines_csv_table = CsvReader.Read("mines.csv", mines_content, report);
+                if (mines_csv_table != null)
+                {
+                    game_content_data._mineDataTable = MineReader.Read(mines_csv_table, game_content_data._locationDataTable, game_content_data._shopDataTable, report);
+                }
+            }
+
+            if (mine_ores_content != null)
+            {
+                CsvTable mine_ores_csv_table = CsvReader.Read("mine_ores.csv", mine_ores_content, report);
+                if (mine_ores_csv_table != null)
+                {
+                    game_content_data._mineOreDataTable = MineOreReader.Read(mine_ores_csv_table, game_content_data._mineDataTable, game_content_data._itemDataTable, report);
                 }
             }
 

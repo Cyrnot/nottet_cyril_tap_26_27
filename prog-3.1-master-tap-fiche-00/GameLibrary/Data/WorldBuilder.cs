@@ -70,6 +70,25 @@ namespace GameLibrary.Data
                 shop_game_object.AddComponent(inventory_component);
             }
 
+            for (int mine_index = 0; mine_index < _gameContentData._mineDataTable.Count; mine_index++)
+            {
+                MineData mine_data = _gameContentData._mineDataTable[mine_index];
+                GameObject mine_game_object = game_object_table[mine_data._locationId];
+                MineComponent mine_component = new MineComponent(mine_game_object, mine_data._stock, mine_data._minutesPerStrike);
+
+                for (int ore_index = 0; ore_index < _gameContentData._mineOreDataTable.Count; ore_index++)
+                {
+                    MineOreData mine_ore_data = _gameContentData._mineOreDataTable[ore_index];
+
+                    if (mine_ore_data._locationId == mine_data._locationId && _gameContentData._itemDataTable.TryGetValue(mine_ore_data._itemId, out ItemData item_data))
+                    {
+                        mine_component.AddOre(item_data, mine_ore_data._weight);
+                    }
+                }
+
+                mine_game_object.AddComponent(mine_component);
+            }
+
             return location;
         }
     }

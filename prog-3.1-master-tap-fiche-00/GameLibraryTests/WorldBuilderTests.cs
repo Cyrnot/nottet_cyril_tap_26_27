@@ -13,7 +13,7 @@ namespace GameLibraryTests
         [Test]
         public void Build_ChildDeclaredBeforeParentIsLinked()
         {
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>()};
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _mineDataTable = new List<MineData>() };
             EventManager eventManager = new EventManager();
             WorldBuilder builder = new WorldBuilder(game_content_data);
 
@@ -29,7 +29,7 @@ namespace GameLibraryTests
         public void Build_LinkedLocationsHaveCorrectTimeToTravelInBothDirections()
         {
             int travel_time = 5;
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>() };
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _mineDataTable = new List<MineData>() };
             EventManager eventManager = new EventManager();
             WorldBuilder builder = new WorldBuilder(game_content_data);
 
@@ -48,7 +48,7 @@ namespace GameLibraryTests
         [Test]
         public void Build_MissingParentArgumentException()
         {
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>() };
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>()};
             EventManager eventManager = new EventManager();
             WorldBuilder builder = new WorldBuilder(game_content_data);
 

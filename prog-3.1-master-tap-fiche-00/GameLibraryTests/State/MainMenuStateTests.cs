@@ -22,7 +22,8 @@ namespace GameLibraryTests.State
                 _shopDataTable = new List<ShopData>(),
                 _inventoryDataTable = new List<InventoryEntryData>(),
                 _itemDataTable = new Dictionary<string, ItemData>(),
-                _heroDataTable = new List<HeroData>()
+                _heroDataTable = new List<HeroData>(),
+                _mineDataTable = new List<MineData>()
             }; 
             return new GameManager(event_manager, game_content_data);
         }

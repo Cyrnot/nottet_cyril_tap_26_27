@@ -27,7 +27,8 @@ namespace GameLibraryTests.State
                 _shopDataTable = new List<ShopData>{new ShopData("GS_DT", 8, 9)},
                 _inventoryDataTable = new List<InventoryEntryData>(),
                 _itemDataTable = new Dictionary<string, ItemData>(),
-                _heroDataTable = new List<HeroData>()
+                _heroDataTable = new List<HeroData>(),
+                _mineDataTable = new List<MineData>()
             };
 
             GameManager game_manager = new GameManager(_event_manager, game_content_data);

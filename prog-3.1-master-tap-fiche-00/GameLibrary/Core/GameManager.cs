@@ -226,7 +226,7 @@ public class GameManager : IFixedStepClock
     public void LoadReplay(ReplayData replay_data)
     {
         StartNewGame(replay_data._seed);
-
+        _gameFlowStateStateMachine.ChangeState(new ExploringState(_gameFlowStateStateMachine, this, _eventManager));
         _replayPlayer = new ReplayPlayer(replay_data, _eventManager, this);
     }
 
@@ -255,6 +255,32 @@ public class GameManager : IFixedStepClock
         return _heroObject.GetComponent<InventoryComponent>();
     }
 
+    public bool CompleteMineStrike(MineComponent mine_component)
+    {
+        if (mine_component == null || mine_component.GetStock() <= 0 || _random == null)
+        {
+            return false;
+        }
+
+        int total_ore_weight = mine_component.GetTotalOreWeight();
+
+        if (total_ore_weight <= 0)
+        {
+            return false;
+        }
+
+        ItemData ore_item = mine_component.GetOreAtWeightIndex(_random.Next(total_ore_weight));
+
+        if (ore_item == null)
+        {
+            return false;
+        }
+
+        GetHeroInventory().Add(ore_item, 1);
+        mine_component.RemoveOneFromStock();
+        return true;
+    }
+
     public WalletComponent GetHeroWallet()
     {
         return _heroObject.GetComponent<WalletComponent>();
@@ -263,5 +289,10 @@ public class GameManager : IFixedStepClock
     public GameObject GetHeroObject()
     {
         return _heroObject;
+    }
+
+    public IState GetCurrentGameFlowState()
+    {
+        return _gameFlowStateStateMachine.GetCurrentState();
     }
 }

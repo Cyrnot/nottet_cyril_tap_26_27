@@ -52,7 +52,7 @@ namespace GameLibraryTests
         public void GetCurrentLocation_ConfirmEnterExploring()
         {
             EventManager event_manager = new EventManager();
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(),_heroDataTable = new List<HeroData>() };
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(),_heroDataTable = new List<HeroData>(), _mineDataTable = new List<MineData>() };
             GameManager game_manager = new GameManager(event_manager, game_content_data);
 
             game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", 5));
@@ -83,7 +83,7 @@ namespace GameLibraryTests
         public void GetCurrentLocation_ConfirmMovesToChildLocation()
         {
             EventManager event_manager = new EventManager();
-            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _heroDataTable = new List<HeroData>() };
+            GameContentData game_content_data = new GameContentData { _locationDataTable = new List<LocationData>(), _shopDataTable = new List<ShopData>(), _heroDataTable = new List<HeroData>(), _mineDataTable = new List<MineData>() };
             GameManager game_manager = new GameManager(event_manager, game_content_data);
 
             game_content_data._locationDataTable.Add(new LocationData("DT_W", "Daisy Town", "W", 5));

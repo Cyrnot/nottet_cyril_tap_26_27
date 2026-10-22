@@ -27,6 +27,8 @@ namespace GameLibraryTests
             game_content_data._inventoryDataTable = new List<InventoryEntryData>();
             game_content_data._heroDataTable = new List<HeroData>();
             game_content_data._heroDataTable.Add(new HeroData("LUCKY_LUKE", "Lucky Luke", 100, 40));
+            game_content_data._mineDataTable = new List<MineData>();
+            game_content_data._mineOreDataTable = new List<MineOreData>();
 
             return game_content_data;
         }

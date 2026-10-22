@@ -13,5 +13,7 @@ namespace GameLibrary.Data
         public Dictionary<string, ItemData> _itemDataTable;
         public List<InventoryEntryData> _inventoryDataTable;
         public List<HeroData> _heroDataTable;
+        public List<MineData> _mineDataTable;
+        public List<MineOreData> _mineOreDataTable;
     }
 }

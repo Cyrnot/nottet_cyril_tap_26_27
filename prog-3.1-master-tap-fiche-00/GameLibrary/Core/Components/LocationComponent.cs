@@ -44,5 +44,10 @@
 
         }
 
+
+        public LocationComponent GetChildLocation()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,6 +1,9 @@
 Id;Name;Price
-CP_GH;Colt Peacemaker;50
-WR_GH;Winchester Rifle;120
+CP_GS;Colt Peacemaker;50
+WR_GS;Winchester Rifle;120
 LH_TS;Leather Helmet;30
 LB_TS;Leather Breastplate;50
-RCP_GH;[Rare] Colt;500
+RCP_GS;[Rare] Colt;100
+CO_SMD;Copper Ore;10
+SO_SMD;Silver Ore;25
+GN_SMD;Gold Nugget;100

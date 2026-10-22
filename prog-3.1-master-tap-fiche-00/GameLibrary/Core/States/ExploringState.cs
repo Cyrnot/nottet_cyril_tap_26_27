@@ -58,6 +58,7 @@ namespace GameLibrary.Core.States
 
                     ShopComponent shop_component = destination_location.GetGameObject().GetComponent<ShopComponent>();
                     InventoryComponent inventory_component = destination_location.GetGameObject().GetComponent<InventoryComponent>();
+                    MineComponent mine_component = destination_location.GetGameObject().GetComponent<MineComponent>();
 
                     if (shop_component != null)
                     {
@@ -69,6 +70,10 @@ namespace GameLibrary.Core.States
                         {
                             _stateMachine.ChangeState(new ShopClosedState(_stateMachine, _gameManager, _eventManager, shop_component, inventory_component));
                         }
+                    }
+                    else if (mine_component != null)
+                    {
+                        _stateMachine.ChangeState(new MiningState(_stateMachine, _gameManager, _eventManager, mine_component));
                     }
                     else
                     {
